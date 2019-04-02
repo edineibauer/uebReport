@@ -10,8 +10,7 @@
     }
   ],
   "require": {
-    "php": "^7.1",
-    "ueb/entity": "*"
+    "php": "^7.1"
   },
   "autoload": {
     "psr-0": {
