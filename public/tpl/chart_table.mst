@@ -42,7 +42,7 @@
     {{^haveClassificacao}}
         <div class="col padding-small">
             <h2 class="col padding-small align-center">
-                <span class="col font-light font-small padding-medium padding-16">{{mensagem}}</span>
+                <span class="col font-light font-large padding-medium padding-16">{{mensagem}}</span>
             </h2>
         </div>
     {{/haveClassificacao}}
