@@ -1,0 +1,49 @@
+<div class='col padding-medium card chart_table'>
+    <h2 class="col padding-small padding-12">
+        <span class="left">{{title}}</span>
+        <div class="right">
+            <select class="font-medium font-light chart-time" rel="{{id}}" data-url="{{url}}">
+                {{#time}}
+                    <option value="{{value}}"{{#selected}} selected='selected'{{/selected}}>
+                        {{nome}}
+                    </option>
+                {{/time}}
+            </select>
+            <span class="input-bar"></span>
+        </div>
+    </h2>
+    {{#haveClassificacao}}
+        <div class="col s12 m5 padding-small">
+            <div class="col responsive">
+                <table class="table striped">
+                    <tr class="border-bottom">
+                        <th>#</th>
+                        <th>{{x}}</th>
+                        {{#y}}
+                            <td class="align-right" style="padding-right: 20px">{{.}}</td>
+                        {{/y}}
+                    </tr>
+                    {{#data}}
+                        <tr>
+                            <td>{{position}}º</td>
+                            <td>{{x}}</td>
+                            {{#y}}
+                                <td class="align-right">{{.}}</td>
+                            {{/y}}
+                        </tr>
+                    {{/data}}
+                </table>
+            </div>
+        </div>
+        <div class="col s12 m7 s-padding-0 s-padding-top" style="padding: 15px 0 0 20px">
+            <canvas id="chart_{{id}}" width="740" height="431" style="max-height: 431px"></canvas>
+        </div>
+    {{/haveClassificacao}}
+    {{^haveClassificacao}}
+        <div class="col padding-small">
+            <h2 class="col padding-small align-center">
+                <span class="col font-light font-small padding-medium padding-16">{{mensagem}}</span>
+            </h2>
+        </div>
+    {{/haveClassificacao}}
+</div>
