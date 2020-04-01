@@ -1,0 +1,51 @@
+<div class="responsive tableList col padding-24 s-padding-0" id="tableList-{{entity}}" data-entity="{{entity}}"
+     data-id="{{identificador}}">
+    <div class="col z-depth-2 grid-form-body radius border overflow-hidden">
+        <div class="col color-white loadindTableSpace">
+            <div class="col padding-small padding-8" style="display: flow-root">
+
+                <div class="padding-8 right">
+                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Envio Mensagem</button>
+                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Envio Automático</button>
+                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Visualizar Gráfico</button>
+                </div>
+
+                <small class="padding-xlarge total right">{{total}}</small>
+
+                <h4 class="left padding-medium padding-12">
+                    {{title}}
+                </h4>
+
+            </div>
+        </div>
+
+        <table class="table-all" style="border: none">
+            <thead>
+            <tr class="no-select">
+                {{#fields}}
+                    {{#first}}
+                    <th style="width: 105px;">
+                    {{/first}}
+                    {{^first}}
+                    <th>
+                    {{/first}}
+                    {{#first}}
+                        <label class="left" style="margin-left: -8px;">
+                            <input type="checkbox" class="table-select-all" data-id="{{identificador}}"/>
+                        </label>
+                    {{/first}}
+                    <span class="pointer grid-order-by" data-column="{{column}}" rel="{{identificador}}">
+                        <span class="left padding-small padding-8">{{nome}}</span>
+                    </span>
+                </th>
+                {{/fields}}
+            </tr>
+            </thead>
+            <tbody class="relative"></tbody>
+        </table>
+    </div>
+    <div class="col padding-12"></div>
+
+    <input type="hidden" class="table-pagina-{{entity}}" value="0" data-entity="{{entity}}"
+           id="table-pagina-{{entity}}"/>
+</div>

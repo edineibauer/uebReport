@@ -1,0 +1,64 @@
+{
+    background: #eeeeee;
+}
+
+#report {
+    max-width: 1300px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.report-nav {
+    z-index: 21;
+    top: inherit;
+    padding-bottom:45px;
+    border-top: solid 1px #dddddd;
+    overflow: hidden;
+}
+
+#report-menu {
+    width: 190px;
+    overflow: hidden;
+}
+
+.report-main {
+    margin-left: 200px
+}
+
+.report-nav::-webkit-scrollbar {
+    width: 5px;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bbb;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #999;
+}
+::-webkit-scrollbar-button {
+    background: #aaa;
+}
+
+.dash-version {
+    position: fixed;
+    top: 52px;
+    right: 3px;
+    color: #999;
+    font-size: .8em
+}
+
+@media only screen and (min-width: 700px) {
+    .btn-panel-sync {
+        width: 200px;
+        min-height: 110px;
+    }
+}

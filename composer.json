@@ -10,7 +10,8 @@
     }
   ],
   "require": {
-    "php": "^7.1"
+    "php": "^7.1",
+    "ueb/dashboard": "^1.1"
   },
   "autoload": {
     "psr-0": {
