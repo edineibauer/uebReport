@@ -52,7 +52,10 @@ if ($read->getResult()) {
                         $note->setTitulo($mensagem['titulo']);
                         $note->setDescricao($mensagem['descricao']);
                         $note->setImagem($mensagem['imagem']);
-                        $note->setUrl($mensagem['url']);
+
+                        if(!empty($mensagem['url']))
+                            $note->setUrl($mensagem['url']);
+
                         $note->setUsuario($user);
                         $note->enviar();
                     }
@@ -68,12 +71,13 @@ if ($read->getResult()) {
                      * Email notification
                      */
                     if (in_array("3", $mensagem['canais']) && !empty($email)) {
-                       $email = new \Email\Email();
-                       $email->setAssunto($mensagem['titulo']);
-                       $email->setMensagem($mensagem['descricao']);
-                       $email->setAnexo($mensagem['imagem']);
-                       $email->setDestinatarioEmail($email);
-                       $email->enviar();
+
+                        $emailSend = new \Email\Email();
+                        $emailSend->setAssunto($mensagem['titulo']);
+                        $emailSend->setMensagem($mensagem['descricao']);
+//                        $emailSend->setAnexo($mensagem['imagemjson']);
+                        $emailSend->setDestinatarioEmail($email);
+                        $emailSend->enviar();
                     }
                 }
             }
