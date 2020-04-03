@@ -5,17 +5,24 @@
             <div class="col padding-small padding-8" style="display: flow-root">
 
                 <div class="padding-8 right">
-                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Envio Mensagem</button>
-                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Envio Automático</button>
-                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">Visualizar Gráfico</button>
+                    <button class="btn theme radius opacity hover-opacity-off right" id="enviar-mensagem" style="margin-bottom: 10px;">
+                        <i class="material-icons left" style="padding-right: 5px">send</i>
+                        <div class="left padding-tiny">enviar</div>
+                    </button>
+                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">
+                        <i class="material-icons left" style="padding-right: 5px">av_timer</i>
+                        <div class="left padding-tiny">programar</div>
+                    </button>
+                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">
+                        <i class="material-icons left" style="padding-right: 5px">insert_chart_outlined</i>
+                        <div class="left padding-tiny">gráfico</div>
+                    </button>
                 </div>
-
-                <small class="padding-xlarge total right">{{total}}</small>
 
                 <h4 class="left padding-medium padding-12">
                     {{title}}
                 </h4>
-
+                <small class="padding-16 total left">{{total}}</small>
             </div>
         </div>
 
@@ -31,7 +38,7 @@
                     {{/first}}
                     {{#first}}
                         <label class="left" style="margin-left: -8px;">
-                            <input type="checkbox" class="table-select-all" data-id="{{identificador}}"/>
+                            <input type="checkbox" class="report-select-all" data-id="{{identificador}}"/>
                         </label>
                     {{/first}}
                     <span class="pointer grid-order-by" data-column="{{column}}" rel="{{identificador}}">

@@ -53,6 +53,7 @@ function reportTable(dataReport, $element) {
     reports = [];
     let report = reports[identificador] = {
         identificador: identificador,
+        id: dataReport.id,
         nome: dataReport.nome,
         entity: dataReport.entidade,
         data: {},
@@ -60,6 +61,7 @@ function reportTable(dataReport, $element) {
         $content: "",
         total: 0,
         page: 1,
+        selecionados: [],
         order: dataReport.ordem,
         orderPosition: dataReport.decrescente,
         filter: filtros,
@@ -109,7 +111,7 @@ function reportTable(dataReport, $element) {
             for (let i = 0; i < le; i++)
                 totalFormated += (i > 0 && (le - i) % 3 === 0 ? "." : "") + total[i];
 
-            this.$element.find(".total").html(totalFormated + " registro" + (totalFormated > 1 ? "s" : ""));
+            this.$element.find(".total").html(totalFormated + " resultado" + (totalFormated > 1 ? "s" : ""));
         },
 
         setLoading: function () {
@@ -143,8 +145,6 @@ function reportTable(dataReport, $element) {
 
                 $this.setTotalRegisters(result.length);
                 $this.$content.html("");
-
-                console.log(result.data);
 
                 dbLocal.exeRead('__historic', 1).then(hist => {
                     $this.historic = hist[$this.entity]
@@ -205,6 +205,7 @@ function reportTable(dataReport, $element) {
 
         show: function () {
             return this.getShow().then(reportData => {
+                pageTransition(reportData, "", "forward", this.$element.attr("id"));
                 this.$element.html(reportData);
                 return this.readData();
             })
@@ -228,7 +229,9 @@ function reportTable(dataReport, $element) {
 $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
-        reportTable(report, $this);
+        dbLocal.exeRead("relatorios", parseInt(report)).then(report => {
+            reportTable(report, $this);
+        });
         return $this;
     };
 
@@ -247,36 +250,43 @@ $(function ($) {
      * Ação de clique no menu de relatórios, chama o relatório
      */
     $("#report-menu").off("click", ".report-menu").on("click", ".report-menu", function () {
-        dbLocal.exeRead("relatorios", parseInt($(this).attr("rel"))).then(report => {
-            $("#report").reportTable(report);
-        })
+        pageTransition($(this).attr("rel"), "report", "forward", "#report");
     });
 
-    $("#report").off("change", ".table-select-all").on("change", ".table-select-all", function () {
+    $("#app").off("change", ".report-select-all").on("change", ".report-select-all", function () {
         let report = reports[$(this).attr("data-id")];
-        report.$content.find(".table-select").prop("checked", $(this).is(":checked"));
+        report.$content.find(".report-select").prop("checked", $(this).is(":checked"));
 
-    }).off("click", ".table-select").on("click", ".table-select", function (evt) {
+        report.selecionados = [];
+        $(".report-select:checked").each(function (i, e) {
+            report.selecionados.push(parseInt($(e).attr("rel")));
+        });
+    }).off("click", ".report-select").on("click", ".report-select", function (evt) {
         let all = !0;
         let $this = $(this);
         let report = reports[$this.attr("data-id")];
         let action = $this.is(":checked");
-        if ((evt.ctrlKey || evt.shiftKey) && report.$content.find(".table-select:checked").length > 1) {
-            let first = report.$content.find(".table-select").index(report.$content.find(".table-select:checked").first());
-            let last = report.$content.find(".table-select").index($this);
+        if ((evt.ctrlKey || evt.shiftKey) && report.$content.find(".report-select:checked").length > 1) {
+            let first = report.$content.find(".report-select").index(report.$content.find(".report-select:checked").first());
+            let last = report.$content.find(".report-select").index($this);
             if (action) {
                 for (let i = first + 1; i < last; i++)
-                    report.$content.find(".table-select:eq(" + i + ")").prop("checked", !0);
+                    report.$content.find(".report-select:eq(" + i + ")").prop("checked", !0);
             } else {
-                for (let i = last + 1; i < report.$content.find(".table-select").length; i++)
-                    report.$content.find(".table-select:eq(" + i + ")").prop("checked", !1);
+                for (let i = last + 1; i < report.$content.find(".report-select").length; i++)
+                    report.$content.find(".report-select:eq(" + i + ")").prop("checked", !1);
             }
         }
-        $.each(report.$content.find(".table-select"), function () {
+        $.each(report.$content.find(".report-select"), function () {
             if (all && $(this).is(":checked") !== $this.is(":checked"))
                 all = !1
         });
-        report.$element.find(".table-select-all").prop("checked", (all && $this.is(":checked")));
+        report.$element.find(".report-select-all").prop("checked", (all && $this.is(":checked")));
+
+        report.selecionados = [];
+        $(".report-select:checked").each(function (i, e) {
+            report.selecionados.push(parseInt($(e).attr("rel")));
+        });
 
     }).off("click", ".grid-order-by").on("click", ".grid-order-by", function () {
         let report = reports[$(this).attr("rel")];
@@ -294,5 +304,13 @@ $(function ($) {
             $(this).append("<i class='material-icons grid-order-by-arrow left padding-8'>arrow_drop_down</i>");
 
         report.readData()
+    }).off("click", "#enviar-mensagem").on("click", "#enviar-mensagem", function () {
+        pageTransition("enviar_mensagem", "form", "forward", "#report").then(() => {
+            for(let i in reports) {
+                form.data.relatorio = reports[i].id;
+                form.data.selecionados = reports[i].selecionados;
+                break;
+            }
+        })
     });
 }, jQuery);
