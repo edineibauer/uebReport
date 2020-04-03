@@ -226,6 +226,15 @@ function reportTable(dataReport, $element) {
     return report;
 }
 
+function goMessage(colunaUsuario, id, selecionados) {
+    pageTransition("enviar_mensagem", "form", "forward", "#report").then(() => {
+        form.data.relatorio = id;
+        form.data.selecionados = selecionados;
+        form.data.coluna_do_usuario = colunaUsuario[0];
+        form.data.entidade_do_usuario = colunaUsuario[1];
+    });
+}
+
 $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
@@ -305,12 +314,53 @@ $(function ($) {
 
         report.readData()
     }).off("click", "#enviar-mensagem").on("click", "#enviar-mensagem", function () {
-        pageTransition("enviar_mensagem", "form", "forward", "#report").then(() => {
-            for(let i in reports) {
-                form.data.relatorio = reports[i].id;
-                form.data.selecionados = reports[i].selecionados;
-                break;
+
+        let colunaUsuario = null, options = [], report = [];
+        for(let i in reports) {
+            report = reports[i];
+            break;
+        }
+
+        dbLocal.exeRead("__info", 1).then(info => {
+            if(info[report.entity].user === 1) {
+                colunaUsuario = ["usuarios_id", "usuarios"];
+            } else {
+                for(let col in dicionarios[report.entity]) {
+                    let meta = dicionarios[report.entity][col];
+                    if(meta.key === "relation" && meta.group === "one" && meta.type === "int" && !isEmpty(meta.relation) && typeof info[meta.relation] !== "undefined" && info[meta.relation].user === 1)
+                        options.push({coluna: col, nome: meta.nome, relation: meta.relation});
+                }
+
+                if(options.length === 1)
+                    colunaUsuario = [options[0].coluna, options[0].relation];
             }
-        })
+
+            if(colunaUsuario) {
+                goMessage(colunaUsuario, report.id, report.selecionados);
+
+            } else if(options.length > 1) {
+                let $dialog = $("<div id='dialog_coluna'><h5>Enviar mensagem para:</h5><select id='select_coluna'></select><button class='btn theme right padding-large' id='button_coluna'>Enviar</button> </div>").appendTo(".report-main");
+                let $select = $dialog.find("#select_coluna");
+                for(let i in options)
+                    $select.append("<option value=\"['" + options[i].coluna + "','" + options[i].relation + "']\">" + options[i].nome + "</option>");
+
+                $("#core-overlay").addClass("active").off("click").on("click", function () {
+                    $(this).removeClass("active");
+                    $dialog.remove();
+                });
+
+                $("#button_coluna").one("click", function () {
+                    if($select.val()) {
+                        $(this).removeClass("active");
+                        $dialog.remove();
+                        goMessage(JSON.parse($select.val()), report.id, report.selecionados);
+                    } else {
+                        toast("selecione o usuário", 1500, "toast-warning");
+                    }
+                });
+            } else {
+                toast("Não existe usuários neste relatório.", 3500, "toast-warning")
+            }
+        });
     });
 }, jQuery);
