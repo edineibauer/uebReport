@@ -83,27 +83,18 @@ if (!empty($mensagem['enviar_para_relatorios'])) {
         if ($read->getResult()) {
             $report = $read->getResult()[0];
             $dicionario = \Entity\Metadados::getDicionario($report['entidade']);
+            $isReportCliente = $report['entidade'] === $mensagem['enviar_para'];
 
             /**
              * Encontra a coluna
              */
             $column = "";
-            foreach ($dicionario as $item) {
-                if ($item['relation'] === $mensagem['enviar_para']) {
-                    $column = $item['column'];
-                    break;
-                }
-            }
-
-            /**
-             * Encontra email
-             */
-            $email = "";
-            if (in_array("2", $mensagem['canais'])) {
-                $dicionarioCliente = \Entity\Metadados::getDicionario($mensagem['enviar_para']);
-                foreach ($dicionarioCliente as $dic) {
-                    if ($dic['format'] === "email") {
-                        $email = $dic['column'];
+            if ($isReportCliente) {
+                $column = "usuarios_id";
+            } else {
+                foreach ($dicionario as $item) {
+                    if ($item['relation'] === $mensagem['enviar_para']) {
+                        $column = $item['column'];
                         break;
                     }
                 }
@@ -112,13 +103,37 @@ if (!empty($mensagem['enviar_para_relatorios'])) {
             if (!empty($column)) {
 
                 /**
+                 * Encontra email
+                 */
+                $email = "";
+                if (in_array("2", $mensagem['canais'])) {
+                    if ($isReportCliente) {
+                        $dicionarioCliente = $dicionario;
+                    } else {
+                        $dicionarioCliente = \Entity\Metadados::getDicionario($mensagem['enviar_para']);
+                    }
+
+                    foreach ($dicionarioCliente as $dic) {
+                        if ($dic['format'] === "email") {
+                            $email = $dic['column'];
+                            break;
+                        }
+                    }
+                }
+
+                /**
                  * Monta Where
                  */
                 $where = exeReadApplyFilter($report['filtros'], $dicionario);
                 $where .= " ORDER BY " . (!empty($report['ordem']) ? "e." . $report['ordem'] : "e.id") . ($report['decrescente'] === null || $report['decrescente'] ? " DESC" : " ASC");
 
                 $sql = new \Conn\SqlCommand();
-                $sql->exeCommand("SELECT c.usuarios_id" . (!empty($email) ? ", c.{$email} as email" : "") . " FROM " . PRE . $report['entidade'] . " as e INNER JOIN " . PRE . $mensagem['enviar_para'] . " as c ON e.{$column} = c.id WHERE e.id > 0" . $where);
+
+                if ($isReportCliente)
+                    $sql->exeCommand("SELECT e.usuarios_id" . (!empty($email) ? ", e.{$email} as email" : "") . " FROM " . PRE . $report['entidade'] . " as e WHERE id > 0" . $where);
+                else
+                    $sql->exeCommand("SELECT c.usuarios_id" . (!empty($email) ? ", c.{$email} as email" : "") . " FROM " . PRE . $report['entidade'] . " as e INNER JOIN " . PRE . $mensagem['enviar_para'] . " as c ON e.{$column} = c.id WHERE e.id > 0" . $where);
+
                 if ($sql->getResult()) {
                     foreach ($sql->getResult() as $result) {
                         if (!in_array($result['usuarios_id'], $usuarios)) {
