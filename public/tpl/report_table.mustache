@@ -4,25 +4,66 @@
         <div class="col color-white loadindTableSpace">
             <div class="col padding-small padding-8" style="display: flow-root">
 
-                <div class="padding-8 right">
-                    <button class="btn theme radius opacity hover-opacity-off right" id="enviar-mensagem" style="margin-bottom: 10px;">
+                <!--<div class="padding-8 right">
+                    <button class="btn theme radius opacity hover-opacity-off right" id="enviar-mensagem"
+                            style="margin-bottom: 10px;">
                         <i class="material-icons left" style="padding-right: 5px">send</i>
                         <div class="left padding-tiny">enviar</div>
                     </button>
-                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">
-                        <i class="material-icons left" style="padding-right: 5px">av_timer</i>
-                        <div class="left padding-tiny">programar</div>
-                    </button>
-                    <button class="btn theme radius opacity hover-opacity-off right" style="margin-bottom: 10px;">
-                        <i class="material-icons left" style="padding-right: 5px">insert_chart_outlined</i>
-                        <div class="left padding-tiny">gráfico</div>
-                    </button>
-                </div>
+                </div>-->
+
+                <button title="filtro"
+                        class="margin-bottom left color-white btn-report-advanced button">
+                    <i class="material-icons left">list</i>
+                </button>
 
                 <h4 class="left padding-medium padding-12">
                     {{title}}
                 </h4>
-                <small class="padding-16 total left">{{total}}</small>
+                <small class="total right padding-right" style="padding-top: 20px">{{total}}</small>
+
+                <div class="right padding-right" style="padding-top: 6px;">
+                    <div class="col sub-header-table-limit">
+                        <select class="col tableReportLimit font-small text-theme" data-id="{{identificador}}">
+                            <option {{#limits.a}}selected="selected" {{/limits.a}}value="15">
+                                15
+                            </option>
+                            <option {{#limits.b}}selected="selected" {{/limits.b}}value="25">
+                                25
+                            </option>
+                            <option {{#limits.c}}selected="selected" {{/limits.c}}value="50">
+                                50
+                            </option>
+                            <option {{#limits.d}}selected="selected" {{/limits.d}}value="100">
+                                100
+                            </option>
+                            <option {{#limits.e}}selected="selected" {{/limits.e}}value="250">
+                                250
+                            </option>
+                            <option {{#limits.f}}selected="selected" {{/limits.f}}value="500">
+                                500
+                            </option>
+                            <option {{#limits.g}}selected="selected" {{/limits.g}}value="1000">
+                                1000
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col padding-4">
+                <div class="col table-report transition-easy overflow-hidden" style="display: flow-root; height: 0">
+                    <button class="btn theme radius opacity margin-left hover-opacity-off left"
+                            style="margin-bottom: 10px;">
+                        <i class="material-icons left" style="padding-right: 5px">av_timer</i>
+                        <div class="left padding-tiny">programar</div>
+                    </button>
+                    <button class="btn theme radius opacity hover-opacity-off left"
+                            style="margin-bottom: 10px;">
+                        <i class="material-icons left" style="padding-right: 5px">insert_chart_outlined</i>
+                        <div class="left padding-tiny">gráfico</div>
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -56,3 +97,10 @@
     <input type="hidden" class="table-pagina-{{entity}}" value="0" data-entity="{{entity}}"
            id="table-pagina-{{entity}}"/>
 </div>
+
+<style>
+    .btn-report-advanced {
+        box-shadow: none !important;
+        padding: 15px!important;
+    }
+</style>
