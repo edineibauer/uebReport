@@ -20,9 +20,9 @@
                 <h4 class="left padding-medium padding-12">
                     {{title}}
                 </h4>
-                <small class="total right padding-right" style="padding-top: 20px">{{total}}</small>
+                <small class="total left padding-right" style="position: absolute; top: 85px; left: 123px; color: #999999;">{{total}}</small>
 
-                <div class="right padding-right" style="padding-top: 6px;">
+                <div class="right padding-right" style="padding-top: 20px;">
                     <div class="col sub-header-table-limit">
                         <select class="col tableReportLimit font-small text-theme" data-id="{{identificador}}">
                             <option {{#limits.a}}selected="selected" {{/limits.a}}value="15">
@@ -49,6 +49,41 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="right padding-right" style="max-width: 160px;">
+                    <label>
+                        <small>Fim</small>
+                        <input type="date" id="dataFinal" data-rel="{{identificador}}" />
+                    </label>
+                </div>
+
+                <div class="right padding-right" style="max-width: 160px;">
+                    <label>
+                        <small>Início</small>
+                        <input type="date" id="dataInicial" data-rel="{{identificador}}" />
+                    </label>
+                </div>
+
+                <!--<div class="right" style="padding: 23px 10px 0 0;">
+                    <div class="right padding-bottom">
+                        <button class="btn radius time-week theme-d3 opacity hover-opacity-off" rel="day" data-rel="{{identificador}}">
+                            Dia
+                        </button>
+                    </div>
+                    <div class="right padding-bottom">
+                        <button class="btn radius time-week theme-d3 opacity hover-opacity-off" rel="week" data-rel="{{identificador}}">Semana
+                        </button>
+                    </div>
+                    <div class="right padding-bottom">
+                        <button class="btn radius time-week theme-d3 opacity hover-opacity-off active" rel="month" data-rel="{{identificador}}">Mês
+                        </button>
+                    </div>
+                    <div class="right padding-bottom">
+                        <button class="btn radius time-week theme-d3 opacity hover-opacity-off" rel="year" data-rel="{{identificador}}">Ano
+                        </button>
+                    </div>
+                </div>-->
+
             </div>
 
             <div class="col padding-4">
@@ -71,17 +106,7 @@
             <thead>
             <tr class="no-select">
                 {{#fields}}
-                    {{#first}}
-                    <th style="width: 105px;">
-                    {{/first}}
-                    {{^first}}
                     <th>
-                    {{/first}}
-                    {{#first}}
-                        <label class="left" style="margin-left: -8px;">
-                            <input type="checkbox" class="report-select-all" data-id="{{identificador}}"/>
-                        </label>
-                    {{/first}}
                     <span class="pointer grid-order-by" data-column="{{column}}" rel="{{identificador}}">
                         <span class="left padding-small padding-8">{{nome}}</span>
                     </span>

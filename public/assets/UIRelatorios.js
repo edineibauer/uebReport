@@ -1,6 +1,5 @@
 var reports = [];
 
-
 function getTrStyle(meta, value) {
     if (typeof meta !== "undefined") {
         let style = meta.datagrid.grid_style;
@@ -155,6 +154,9 @@ function reportTable(dataReport, $element) {
         nome: dataReport.nome,
         entity: dataReport.entidade,
         data: {},
+        dateStart: "1900-01-01",
+        dateEnd: "2900-01-01",
+        interval: 'month',
         $element: $element,
         $content: "",
         total: 0,
@@ -241,7 +243,6 @@ function reportTable(dataReport, $element) {
             return Promise.all([result, getTemplates()]).then(r => {
                 result = r[0];
                 let templates = r[1];
-                console.log(result);
 
                 $this.setTotalRegisters(result.length);
                 $this.$content.html("");
@@ -306,8 +307,6 @@ function reportTable(dataReport, $element) {
                 if (isEmpty(report.fields))
                     this.fields = r[0];
 
-                console.log(this.limit);
-
                 return getTemplates().then(templates => {
                     return Mustache.render(templates.report_table, {
                         entity: report.entity,
@@ -362,6 +361,71 @@ function goMessage(colunaUsuario, id, selecionados) {
     });
 }
 
+/**
+ * Limite - atualiza valor da data de início com base no intervalo selecionado
+ */
+function privateChartDateUpdateLimit(report, useStartDateInsteadDateEnd) {
+    useStartDateInsteadDateEnd = typeof useStartDateInsteadDateEnd !== "undefined";
+    let now = new Date((useStartDateInsteadDateEnd ? report.dateStart : report.dateEnd) + " 23:59:59");
+    let limit = (report.interval === "year" ? 365 : (report.interval === "month" ? privateChartGetNumberDaysMonth(now.getMonth()) - 1 : (report.interval === "week" ? 6 : 0)));
+
+    if (useStartDateInsteadDateEnd) {
+        let dateLimit = new Date(now.setDate(now.getDate() + limit));
+        report.dateEnd = dateLimit.getFullYear() + "-" + zeroEsquerda(dateLimit.getMonth() + 1) + "-" + zeroEsquerda(dateLimit.getDate());
+        $("#dataFinal").val(report.dateEnd)
+
+    } else {
+
+        let dateLimit = new Date(now.setDate(now.getDate() - limit));
+        report.dateStart = dateLimit.getFullYear() + "-" + zeroEsquerda(dateLimit.getMonth() + 1) + "-" + zeroEsquerda(dateLimit.getDate());
+        $("#dataInicial").val(report.dateStart)
+
+        report.dateEnd = moment(report.dateStart).add(limit, 'days').format("YYYY-MM-DD");
+        $("#dataFinal").val(report.dateEnd)
+    }
+
+    /**
+     * Encontrar campo data
+     */
+    let columnDate = null;
+    for (let d in dicionarios[report.entity]) {
+        if (dicionarios[report.entity][d].format === "datetime") {
+            columnDate = dicionarios[report.entity][d].column;
+        } else if (dicionarios[report.entity][d].format === "date") {
+            if (columnDate === null || dicionarios[report.entity][d].column.indexOf("cadastro") > -1)
+                columnDate = dicionarios[report.entity][d].column;
+        }
+    }
+    if(!isEmpty(columnDate)) {
+        for(let i in report.filter) {
+            if(report.filter[i].column === columnDate)
+                report.filter.splice(i, 1);
+        }
+
+        /*report.filter.push({
+            column: columnDate,
+            operator: "maior igual a",
+            value: report.dateStart
+        });*/
+
+        report.filter.push({
+            column: columnDate,
+            operator: "menor igual a",
+            value: report.dateEnd
+        });
+    }
+}
+
+function privateChartGetNumberDaysMonth(month) {
+    if (month === 1)
+        return 28;
+
+    if ([3, 5, 8, 10].indexOf(month) > -1)
+        return 30;
+
+    return 31;
+}
+
 $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
@@ -407,6 +471,30 @@ $(function ($) {
             $filter.find(".table-filter-operator").val("");
             $filter.find(".table-filter-value").val("");
         }
+    }).off("change", "#dataInicial").on("change", "#dataInicial", function () {
+        let report = reports[$(this).data("rel")];
+        report.dateStart = $(this).val();
+        privateChartDateUpdateLimit(report, 1);
+        report.readData();
+
+    }).off("change", "#dataFinal").on("change", "#dataFinal", function () {
+        let report = reports[$(this).data("rel")];
+        report.dateEnd = $(this).val();
+        privateChartDateUpdateLimit(report);
+        report.readData();
+        /*
+            }).off("click", ".time-week").on("click", ".time-week", function () {
+                let report = reports[$(this).data("rel")];
+                $(".time-week").removeClass("active");
+                $(this).addClass("active");
+
+                /!**
+                 * Intervalo - atualiza valor
+                 *!/
+                chartFilter.interval = $(this).attr("rel");
+                privateChartDateUpdateLimit(undefined, 1);
+                report.readData();*/
+
     }).off("change", ".tableReportLimit").on("change", ".tableReportLimit", function () {
         let report = reports[$(this).attr("data-id")];
         localStorage.limitGrid = parseInt($(this).val());
