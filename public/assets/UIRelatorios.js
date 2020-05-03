@@ -137,16 +137,6 @@ function reportTable(dataReport, $element) {
 
     let identificador = Math.floor((Math.random() * 1000)) + "" + Date.now();
 
-    let filtros = [];
-    if (!isEmpty(dataReport.filtros)) {
-        for (let i in dataReport.filtros)
-            filtros.push({
-                column: dataReport.filtros[i].coluna,
-                operator: dataReport.filtros[i].operador,
-                value: dataReport.filtros[i].valor
-            });
-    }
-
     reports = [];
     let report = reports[identificador] = {
         identificador: identificador,
@@ -165,7 +155,7 @@ function reportTable(dataReport, $element) {
         selecionados: [],
         order: dataReport.ordem,
         orderPosition: dataReport.decrescente,
-        filter: filtros,
+        report: dataReport.regras,
         historic: 0,
         loadingTime: null,
         loadingHtml: null,
@@ -239,7 +229,7 @@ function reportTable(dataReport, $element) {
             this.setLoading();
 
             let offset = ($this.page * $this.limit) - $this.limit;
-            let result = reportRead($this.entity, $this.id, $this.order, $this.orderPosition, $this.limit, offset);
+            let result = reportRead($this.entity, $this.report, $this.order, $this.orderPosition, $this.limit, offset);
             return Promise.all([result, getTemplates()]).then(r => {
                 result = r[0];
                 let templates = r[1];
@@ -397,10 +387,10 @@ function privateChartDateUpdateLimit(report, useStartDateInsteadDateEnd) {
         }
     }
     if(!isEmpty(columnDate)) {
-        for(let i in report.filter) {
-            if(report.filter[i].column === columnDate)
-                report.filter.splice(i, 1);
-        }
+        // for(let i in report.filter) {
+        //     if(report.filter[i].column === columnDate)
+        //         report.filter.splice(i, 1);
+        // }
 
         /*report.filter.push({
             column: columnDate,
@@ -408,11 +398,11 @@ function privateChartDateUpdateLimit(report, useStartDateInsteadDateEnd) {
             value: report.dateStart
         });*/
 
-        report.filter.push({
-            column: columnDate,
-            operator: "menor igual a",
-            value: report.dateEnd
-        });
+        // report.filter.push({
+        //     column: columnDate,
+        //     operator: "menor igual a",
+        //     value: report.dateEnd
+        // });
     }
 }
 
