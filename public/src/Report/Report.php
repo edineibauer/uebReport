@@ -4,6 +4,8 @@ namespace Report;
 
 use Conn\Read;
 use Conn\SqlCommand;
+use Entity\Meta;
+use Entity\Metadados;
 
 class Report
 {
@@ -22,18 +24,18 @@ class Report
      */
     public function __construct($report, int $limit = null, int $offset = null)
     {
-        if(is_int($report)) {
+        if (is_int($report)) {
             $read = new Read();
             $read->exeRead("relatorios", "WHERE id = :id", "id={$report}");
             $this->report = $read->getResult() ? $read->getResult()[0] : [];
-        } elseif(is_array($report)) {
+        } elseif (is_array($report)) {
             $this->report = $report;
         }
 
-        if(!empty($limit))
+        if (!empty($limit))
             $this->limit = $limit;
 
-        if(!empty($offset))
+        if (!empty($offset))
             $this->offset = $offset;
 
         if (is_array($this->report) && !empty($this->report))
@@ -86,7 +88,7 @@ class Report
                     if (!empty($regra['grupos'])) {
                         foreach ($regra['grupos'] as $i => $grupo) {
                             if (!empty($grupo['filtros']))
-                                $query .=  ($i > 0 ? " " . strtoupper($grupo['filtros'][0]['logica']) : "") . " (" . $this->getFilterQuery($grupo['filtros']) . ")";
+                                $query .= ($i > 0 ? " " . strtoupper($grupo['filtros'][0]['logica']) : "") . " (" . $this->getFilterQuery($grupo['filtros']) . ")";
                         }
                     }
 
@@ -138,49 +140,70 @@ class Report
             $colunas = json_decode($filterOption['colunas'], !0);
             $entidades = json_decode($filterOption['entidades'], !0);
 
-            if(count($colunas) > 1) {
+            if (count($colunas) > 1) {
                 /**
                  * Adiciona entidades externas para concatenação JOIN
                  */
                 $entityParent = "";
                 foreach ($entidades as $ii => $entidade) {
-                    if($ii > 0 && !isset($this->queryDeclaration[$entidade]))
+                    if ($ii > 0 && !isset($this->queryDeclaration[$entidade]))
                         $this->queryDeclaration[$entidade] = ["tipo" => "INNER JOIN", "on" => "{$entityParent} = {$entidade}.id"];
 
                     $entityParent = $entidade . "." . $colunas[$ii];
                 }
                 $column = $entidades[count($entidades) - 1] . "." . $filterOption['coluna'];
+                $dicionario = Metadados::getDicionario($entidades[count($entidades) - 1]);
             } else {
                 $column = $entidades[0] . "." . $filterOption['coluna'];
+                $dicionario = Metadados::getDicionario($entidades[0]);
             }
+
+            /**
+             * Transforma valor do campo no padrão para o campo
+             */
+            $valor = $filterOption['valor'];
+            $valorTipado = $valor;
+            $tipo = "varchar";
+            foreach ($dicionario as $item) {
+                if ($item['column'] === $filterOption['coluna']) {
+                    $meta = new Meta($item);
+                    $meta->setValue($valor);
+                    $tipo = $meta->getType();
+                    $valor = $meta->getValue();
+                    break;
+                }
+            }
+
+            if(!in_array($tipo, ["int", "tinyint", "double", "decimal", "float", "smallint"]))
+                $valorTipado = '"' . str_replace('"', "'", $valor) . '"';
 
             switch ($filterOption['operador']) {
                 case 'contém':
-                    $query .= " {$column} LIKE '%{$filterOption['valor']}%'";
+                    $query .= " {$column} LIKE '%{$valor}%'";
                     break;
                 case 'igual a':
-                    $query .= " {$column} = '{$filterOption['valor']}'";
+                    $query .= " {$column} = {$valorTipado}";
                     break;
                 case 'diferente de':
-                    $query .= " {$column} != '{$filterOption['valor']}'";
+                    $query .= " {$column} != {$valorTipado}";
                     break;
                 case 'começa com':
-                    $query .= " {$column} LIKE '{$filterOption['valor']}%'";
+                    $query .= " {$column} LIKE '{$valor}%'";
                     break;
                 case 'termina com':
-                    $query .= " {$column} LIKE '%{$filterOption['valor']}'";
+                    $query .= " {$column} LIKE '%{$valor}'";
                     break;
                 case 'maior que':
-                    $query .= " {$column} > {$filterOption['valor']}";
+                    $query .= " {$column} > {$valorTipado}";
                     break;
                 case 'menor que':
-                    $query .= " {$column} < {$filterOption['valor']}";
+                    $query .= " {$column} < {$valorTipado}";
                     break;
                 case 'maior igual a':
-                    $query .= " {$column} >= {$filterOption['valor']}";
+                    $query .= " {$column} >= {$valorTipado}";
                     break;
                 case 'menor igual a':
-                    $query .= " {$column} <= {$filterOption['valor']}";
+                    $query .= " {$column} <= {$valorTipado}";
             }
         }
 

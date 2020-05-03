@@ -239,7 +239,7 @@ function reportTable(dataReport, $element) {
             this.setLoading();
 
             let offset = ($this.page * $this.limit) - $this.limit;
-            let result = exeRead($this.entity, $this.filter, $this.order, $this.orderPosition, $this.limit, offset);
+            let result = reportRead($this.entity, $this.id, $this.order, $this.orderPosition, $this.limit, offset);
             return Promise.all([result, getTemplates()]).then(r => {
                 result = r[0];
                 let templates = r[1];
