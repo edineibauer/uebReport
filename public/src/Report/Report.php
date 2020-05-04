@@ -110,12 +110,12 @@ class Report
         $queryOrder = "ORDER BY " . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($offset) && $offset > 0 ? " OFFSET " . $offset : "");
 
         $queryGroup = "";
-        if(!empty($this->report['aggroup'])) {
-            $queryGroup = "GROUP BY " . $this->report['aggroup'];
+        if(!empty($this->report['agrupamento'])) {
+            $queryGroup = "GROUP BY " . $this->report['agrupamento'];
             $querySelect .= ", COUNT(id) as contagem";
 
-            $soma = (!empty($soma)) ? json_decode($soma, !0) : [];
-            $media = (!empty($media)) ? json_decode($media, !0) : [];
+            $soma = (!empty($soma)) ? json_decode($this->report['soma'], !0) : [];
+            $media = (!empty($media)) ? json_decode($this->report['media'], !0) : [];
             if(!empty($soma)) {
                 foreach ($soma as $item)
                     $querySelect .= ", SUM({$item}) as {$item}Soma";
@@ -127,6 +127,9 @@ class Report
         }
         $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
 
+        echo "<pre>";
+        var_dump($query);
+        die;
         /**
          * Executa a leitura no banco de dados
          */

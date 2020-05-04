@@ -2,13 +2,16 @@
  * Faz request para ler report
  * @param entity
  * @param filter
+ * @param aggroup
+ * @param soma
+ * @param media
  * @param order
  * @param reverse
  * @param limit
  * @param offset
- * @returns {PromiseLike<any> | Promise<any>}
+ * @returns {Promise<unknown>}
  */
-async function reportRead(entity, filter, order, reverse, limit, offset) {
+async function reportRead(entity, filter, aggroup, soma, media, order, reverse, limit, offset) {
     order = typeof order === "string" ? order : "id";
     reverse = (typeof reverse !== "undefined" ? (reverse ? !0 : !1) : !1);
     limit = parseInt(typeof limit === "number" ? limit : (localStorage.limitGrid ? localStorage.limitGrid : 15));
@@ -33,7 +36,10 @@ async function reportRead(entity, filter, order, reverse, limit, offset) {
                 order: order,
                 reverse: reverse,
                 limit: limit,
-                offset: offset
+                offset: offset,
+                aggroup: aggroup,
+                soma: soma,
+                media: media,
             },
             success: function (dados) {
                 if (dados.response === 1)
