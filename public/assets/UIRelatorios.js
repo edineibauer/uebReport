@@ -522,6 +522,9 @@ $(function ($) {
                 identificador: report.identificador,
                 tipo: "select"
             });
+            report.report[0].grupos.push({
+                filtros:[]
+            });
         }
 
         report.report[0].grupos[0].filtros.push({
