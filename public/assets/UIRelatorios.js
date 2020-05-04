@@ -594,7 +594,7 @@ $(function ($) {
             columnName: "filtros",
             columnRelation: "relatorios_filtro",
             columnStatus: {column: "", have: false, value: false},
-            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor menor igual a " + report.dateStart + "</span>",
+            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor menor igual a " + report.dateEnd + "</span>",
             coluna: colunaDate,
             colunas: '["' + colunaDate + '"]',
             entidades: '["' + report.entity + '"]',
@@ -602,7 +602,7 @@ $(function ($) {
             identificador: report.identificador,
             logica: "and",
             operador: "menor igual a",
-            valor: report.dateStart
+            valor: report.dateEnd
         });
 
         if(colunaDate !== "")
