@@ -38,8 +38,8 @@ $(function () {
                 for (let col in dicionarios[$this.entity]) {
                     $aggroup.append("<option value='" + col + "'>" + dicionarios[$this.entity][col].nome + "</option>");
 
-                    if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[grid.entity][col].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[grid.entity][col].key) === -1)
-                        $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><span class='theme-text-aux left' style='position: absolute;top: -6px;font-size: 11px;'> " + dicionarios[grid.entity][col].nome + "</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px'>soma</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px; left:25px'>média</span><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='sum-aggroup-col' style='margin: 22px 4px 0 2px' /><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='media-aggroup-col' /></div>");
+                    if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[$this.entity][col].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[$this.entity][col].key) === -1)
+                        $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><span class='theme-text-aux left' style='position: absolute;top: -6px;font-size: 11px;'> " + dicionarios[$this.entity][col].nome + "</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px'>soma</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px; left:25px'>média</span><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='sum-aggroup-col' style='margin: 22px 4px 0 2px' /><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='media-aggroup-col' /></div>");
                 }
             }
         }
