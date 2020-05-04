@@ -2,6 +2,7 @@
 
 use \Config\Config;
 
+
 $filter['regras'] = json_encode(filter_input(INPUT_POST, 'filter', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY));
 $filter['entidade'] = filter_input(INPUT_POST, 'entity', FILTER_DEFAULT);
 $filter['ordem'] = filter_input(INPUT_POST, 'order', FILTER_DEFAULT);

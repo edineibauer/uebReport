@@ -127,9 +127,6 @@ class Report
         }
         $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
 
-        echo "<pre>";
-        var_dump($query);
-        die;
         /**
          * Executa a leitura no banco de dados
          */

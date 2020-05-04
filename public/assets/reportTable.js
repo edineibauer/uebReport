@@ -32,10 +32,15 @@ $(function () {
     if(USER.setor === "admin") {
         for (let i in grids) {
             let $this = grids[i];
+            let $sum = $this.$element.find(".sum-aggroup").html("");
             if(!$this.$element.find(".aggroup").find("option").length) {
                 let $aggroup = $this.$element.find(".aggroup").html("<option value='' selected='selected'>agrupar por...</option>");
-                for (let col in dicionarios[$this.entity])
+                for (let col in dicionarios[$this.entity]) {
                     $aggroup.append("<option value='" + col + "'>" + dicionarios[$this.entity][col].nome + "</option>");
+
+                    if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[grid.entity][col].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[grid.entity][col].key) === -1)
+                        $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><span class='theme-text-aux left' style='position: absolute;top: -6px;font-size: 11px;'> " + dicionarios[grid.entity][col].nome + "</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px'>soma</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px; left:25px'>média</span><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='sum-aggroup-col' style='margin: 22px 4px 0 2px' /><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='media-aggroup-col' /></div>");
+                }
             }
         }
     }
@@ -337,14 +342,11 @@ $(function () {
         let identificador = $(this).attr("rel");
         let grid = grids[identificador];
         grid.filterAggroup = $(this).val();
-        let $sum = grid.$element.find(".sum-aggroup").html("");
 
         if(grid.filterAggroup !== "") {
-            for(let i in dicionarios[grid.entity]) {
-                if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[grid.entity][i].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[grid.entity][i].key) === -1)
-                    $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><span class='theme-text-aux left' style='position: absolute;top: -6px;font-size: 11px;'> " + dicionarios[grid.entity][i].nome + "</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px'>soma</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px; left:25px'>média</span><input type='checkbox' rel='" + identificador + "' value='" + i + "' class='sum-aggroup-col' style='margin: 22px 4px 0 2px' /><input type='checkbox' rel='" + identificador + "' value='" + i + "' class='media-aggroup-col' /></div>");
-            }
+            grid.$element.find(".sum-aggroup").removeClass("hide");
         } else {
+            grid.$element.find(".sum-aggroup").addClass("hide");
             grid.filterAggroupSum = [];
             grid.filterAggroupMedia = [];
         }
@@ -370,6 +372,8 @@ $(function () {
         });
         grid.filterAggroupMedia = media;
 
+        grid.readData();
+
     }).off("click", ".media-aggroup-col").on("click", ".media-aggroup-col", function () {
         let identificador = $(this).attr("rel");
         let grid = grids[identificador];
@@ -388,6 +392,8 @@ $(function () {
             soma.push($(e).val())
         });
         grid.filterAggroupSum = soma;
+
+        grid.readData();
 
     }).off("click", "#gerar-relatorio").on("click", "#gerar-relatorio", function () {
         let nome = "";
