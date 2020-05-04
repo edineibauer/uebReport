@@ -540,20 +540,22 @@ $(function ($) {
             }
         }
 
-        report.report[0].grupos[0].filtros.push({
-            columnName: "filtros",
-            columnRelation: "relatorios_filtro",
-            columnStatus: {column: "", have: false, value: false},
-            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor maior igual a " + report.dateStart + "</span>",
-            coluna: colunaDate,
-            colunas: '["' + colunaDate + '"]',
-            entidades: '["' + report.entity + '"]',
-            id: "99999998765",
-            identificador: report.identificador,
-            logica: "and",
-            operador: "maior igual a",
-            valor: report.dateStart
-        });
+        if(report.dateStart !== "") {
+            report.report[0].grupos[0].filtros.push({
+                columnName: "filtros",
+                columnRelation: "relatorios_filtro",
+                columnStatus: {column: "", have: false, value: false},
+                columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor maior igual a " + report.dateStart + "</span>",
+                coluna: colunaDate,
+                colunas: '["' + colunaDate + '"]',
+                entidades: '["' + report.entity + '"]',
+                id: "99999998765",
+                identificador: report.identificador,
+                logica: "and",
+                operador: "maior igual a",
+                valor: report.dateStart
+            });
+        }
 
         if(colunaDate !== "")
             report.readData();
@@ -590,20 +592,22 @@ $(function ($) {
             }
         }
 
-        report.report[0].grupos[0].filtros.push({
-            columnName: "filtros",
-            columnRelation: "relatorios_filtro",
-            columnStatus: {column: "", have: false, value: false},
-            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor menor igual a " + report.dateEnd + "</span>",
-            coluna: colunaDate,
-            colunas: '["' + colunaDate + '"]',
-            entidades: '["' + report.entity + '"]',
-            id: "99999998764",
-            identificador: report.identificador,
-            logica: "and",
-            operador: "menor igual a",
-            valor: report.dateEnd
-        });
+        if(report.dateEnd !== "") {
+            report.report[0].grupos[0].filtros.push({
+                columnName: "filtros",
+                columnRelation: "relatorios_filtro",
+                columnStatus: {column: "", have: false, value: false},
+                columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor menor igual a " + report.dateEnd + "</span>",
+                coluna: colunaDate,
+                colunas: '["' + colunaDate + '"]',
+                entidades: '["' + report.entity + '"]',
+                id: "99999998764",
+                identificador: report.identificador,
+                logica: "and",
+                operador: "menor igual a",
+                valor: report.dateEnd
+            });
+        }
 
         if(colunaDate !== "")
             report.readData();
