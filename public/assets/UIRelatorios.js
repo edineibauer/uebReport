@@ -472,7 +472,7 @@ $(function ($) {
         let colunaDate = "";
         let nivelColunaDate = -1;
         for(let column in dicionarios[report.entity]) {
-            if(dicionarios[report.entity][column].type === "datetime") {
+            if(dicionarios[report.entity][column].format === "datetime") {
                 if(column.indexOf("cadastro") > -1) {
                     if(nivelColunaDate < 5) {
                         colunaDate = column;
@@ -490,7 +490,7 @@ $(function ($) {
                     }
                 }
 
-            } else if(dicionarios[report.entity][column].type === "date") {
+            } else if(dicionarios[report.entity][column].format === "date") {
                 if(column.indexOf("cadastro") > -1) {
                     if(nivelColunaDate < 4) {
                         colunaDate = column;
@@ -525,6 +525,13 @@ $(function ($) {
             report.report[0].grupos.push({
                 filtros:[]
             });
+        } else {
+            for(let i in report.report[0].grupos[0].filtros) {
+                if(report.report[0].grupos[0].filtros[i].id === "99999998765") {
+                    report.report[0].grupos[0].filtros.splice(i, 1);
+                    break;
+                }
+            }
         }
 
         report.report[0].grupos[0].filtros.push({
@@ -535,7 +542,7 @@ $(function ($) {
             coluna: colunaDate,
             colunas: '["' + colunaDate + '"]',
             entidades: '["' + report.entity + '"]',
-            id: Math.floor((Math.random() * 1000)) + "" + Date.now(),
+            id: "99999998765",
             identificador: report.identificador,
             logica: "and",
             operador: "maior que",
