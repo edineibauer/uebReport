@@ -76,7 +76,7 @@ class Report
 
     private function start()
     {
-        $querySelect = "SELECT {$this->report['entidade']}.*";
+        $querySelect = "SELECT *";
         $this->queryDeclaration[$this->report['entidade']] = ["tipo" => "FROM", "on" => ""];
         $queryLogic = "WHERE";
 
@@ -108,7 +108,24 @@ class Report
             $queryDeclarationString .= ($queryDeclarationString !== "" ? " " : "") . "{$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
         $queryOrder = "ORDER BY " . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($offset) && $offset > 0 ? " OFFSET " . $offset : "");
-        $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryOrder;
+
+        $queryGroup = "";
+        if(!empty($this->report['aggroup'])) {
+            $queryGroup = "GROUP BY " . $this->report['aggroup'];
+            $querySelect .= ", COUNT(id) as contagem";
+
+            $soma = (!empty($soma)) ? json_decode($soma, !0) : [];
+            $media = (!empty($media)) ? json_decode($media, !0) : [];
+            if(!empty($soma)) {
+                foreach ($soma as $item)
+                    $querySelect .= ", SUM({$item}) as {$item}Soma";
+            }
+            if(!empty($media)) {
+                foreach ($media as $item)
+                    $querySelect .= ", AVG({$item}) as {$item}Media";
+            }
+        }
+        $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
 
         /**
          * Executa a leitura no banco de dados
