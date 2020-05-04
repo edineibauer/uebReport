@@ -416,6 +416,56 @@ function privateChartGetNumberDaysMonth(month) {
     return 31;
 }
 
+
+/**
+ * Busca campo data com controle de nível de relevância
+ * @param report
+ * @returns {string}
+ */
+function findColumnDate(report) {
+    let colunaDate = "";
+    let nivelColunaDate = -1;
+    for(let column in dicionarios[report.entity]) {
+        if(dicionarios[report.entity][column].format === "datetime") {
+            if(column.indexOf("cadastro") > -1) {
+                if(nivelColunaDate < 5) {
+                    colunaDate = column;
+                    nivelColunaDate = 5;
+                }
+            } else if(column === "data" || column === "date") {
+                if(nivelColunaDate < 3) {
+                    colunaDate = column;
+                    nivelColunaDate = 3;
+                }
+            } else {
+                if(nivelColunaDate < 1) {
+                    colunaDate = column;
+                    nivelColunaDate = 1;
+                }
+            }
+
+        } else if(dicionarios[report.entity][column].format === "date") {
+            if(column.indexOf("cadastro") > -1) {
+                if(nivelColunaDate < 4) {
+                    colunaDate = column;
+                    nivelColunaDate = 4;
+                }
+            } else if(column === "data" || column === "date") {
+                if(nivelColunaDate < 2) {
+                    colunaDate = column;
+                    nivelColunaDate = 2;
+                }
+            } else {
+                if(nivelColunaDate < 0) {
+                    colunaDate = column;
+                    nivelColunaDate = 0;
+                }
+            }
+        }
+    }
+    return colunaDate;
+}
+
 $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
@@ -464,51 +514,7 @@ $(function ($) {
     }).off("change", "#dataInicial").on("change", "#dataInicial", function () {
         let report = reports[$(this).data("rel")];
         report.dateStart = $(this).val();
-
-        /**
-         * Busca campo data com controle de nível de relevância
-         * @type {string}
-         */
-        let colunaDate = "";
-        let nivelColunaDate = -1;
-        for(let column in dicionarios[report.entity]) {
-            if(dicionarios[report.entity][column].format === "datetime") {
-                if(column.indexOf("cadastro") > -1) {
-                    if(nivelColunaDate < 5) {
-                        colunaDate = column;
-                        nivelColunaDate = 5;
-                    }
-                } else if(column === "data" || column === "date") {
-                    if(nivelColunaDate < 3) {
-                        colunaDate = column;
-                        nivelColunaDate = 3;
-                    }
-                } else {
-                    if(nivelColunaDate < 1) {
-                        colunaDate = column;
-                        nivelColunaDate = 1;
-                    }
-                }
-
-            } else if(dicionarios[report.entity][column].format === "date") {
-                if(column.indexOf("cadastro") > -1) {
-                    if(nivelColunaDate < 4) {
-                        colunaDate = column;
-                        nivelColunaDate = 4;
-                    }
-                } else if(column === "data" || column === "date") {
-                    if(nivelColunaDate < 2) {
-                        colunaDate = column;
-                        nivelColunaDate = 2;
-                    }
-                } else {
-                    if(nivelColunaDate < 0) {
-                        colunaDate = column;
-                        nivelColunaDate = 0;
-                    }
-                }
-            }
-        }
+        let colunaDate = findColumnDate(report);
 
         if(typeof report.report[0] !== "object") {
             report.report = [];
@@ -538,14 +544,14 @@ $(function ($) {
             columnName: "filtros",
             columnRelation: "relatorios_filtro",
             columnStatus: {column: "", have: false, value: false},
-            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor maior que " + report.dateStart + "</span>",
+            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor maior igual a " + report.dateStart + "</span>",
             coluna: colunaDate,
             colunas: '["' + colunaDate + '"]',
             entidades: '["' + report.entity + '"]',
             id: "99999998765",
             identificador: report.identificador,
             logica: "and",
-            operador: "maior que",
+            operador: "maior igual a",
             valor: report.dateStart
         });
 
@@ -558,21 +564,51 @@ $(function ($) {
         let report = reports[$(this).data("rel")];
         report.dateEnd = $(this).val();
 
+        let colunaDate = findColumnDate(report);
 
+        if(typeof report.report[0] !== "object") {
+            report.report = [];
+            report.report.push({
+                columnName: "regras",
+                columnRelation: "relatorios_regras",
+                columnStatus: {column: "", have: false, value: false},
+                columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>tipo</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> select</span>",
+                grupos: [],
+                id: Math.floor((Math.random() * 1000)) + "" + Date.now(),
+                identificador: report.identificador,
+                tipo: "select"
+            });
+            report.report[0].grupos.push({
+                filtros:[]
+            });
+        } else {
+            for(let i in report.report[0].grupos[0].filtros) {
+                if(report.report[0].grupos[0].filtros[i].id === "99999998764") {
+                    report.report[0].grupos[0].filtros.splice(i, 1);
+                    break;
+                }
+            }
+        }
 
-        report.readData();
-        /*
-            }).off("click", ".time-week").on("click", ".time-week", function () {
-                let report = reports[$(this).data("rel")];
-                $(".time-week").removeClass("active");
-                $(this).addClass("active");
+        report.report[0].grupos[0].filtros.push({
+            columnName: "filtros",
+            columnRelation: "relatorios_filtro",
+            columnStatus: {column: "", have: false, value: false},
+            columnTituloExtend: "<small class='color-gray left opacity padding-tiny radius'>regra</small><span style='padding: 1px 5px' class='left padding-right font-medium td-title'> e => valor menor igual a " + report.dateStart + "</span>",
+            coluna: colunaDate,
+            colunas: '["' + colunaDate + '"]',
+            entidades: '["' + report.entity + '"]',
+            id: "99999998764",
+            identificador: report.identificador,
+            logica: "and",
+            operador: "menor igual a",
+            valor: report.dateStart
+        });
 
-                /!**
-                 * Intervalo - atualiza valor
-                 *!/
-                chartFilter.interval = $(this).attr("rel");
-                privateChartDateUpdateLimit(undefined, 1);
-                report.readData();*/
+        if(colunaDate !== "")
+            report.readData();
+        else
+            toast("campo de data não encontrado", "toast-warning");
 
     }).off("change", ".tableReportLimit").on("change", ".tableReportLimit", function () {
         let report = reports[$(this).attr("data-id")];
