@@ -136,7 +136,7 @@ class Report
         if (!$sql->getErro() && $sql->getResult()) {
             $this->result = $sql->getResult();
 
-            $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "");
+            $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup;
             $sql->exeCommand($query);
             if (!$sql->getErro() && $sql->getResult())
                 $this->total = $sql->getRowCount();
