@@ -30,8 +30,8 @@ $(function () {
      * Adiciona os campos da entidade ao filtro de agrupamento
      */
     if(USER.setor === "admin") {
-        for (let i in grids) {
-            let $this = grids[i];
+        for (let identificador in grids) {
+            let $this = grids[identificador];
             let $sum = $this.$element.find(".sum-aggroup");
             if(!$this.$element.find(".aggroup").find("option").length) {
                 let $aggroup = $this.$element.find(".aggroup").html("<option value='' selected='selected'>agrupar por...</option>");
