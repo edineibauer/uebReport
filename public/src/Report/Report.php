@@ -118,11 +118,11 @@ class Report
             $media = (!empty($this->report['media'])) ? json_decode($this->report['media'], !0) : [];
             if(!empty($soma)) {
                 foreach ($soma as $item)
-                    $querySelect .= ", SUM({$item}) as {$item}Soma";
+                    $querySelect .= ", SUM({$item}) as {$item}";
             }
             if(!empty($media)) {
                 foreach ($media as $item)
-                    $querySelect .= ", AVG({$item}) as {$item}Media";
+                    $querySelect .= ", AVG({$item}) as {$item}";
             }
         }
 
