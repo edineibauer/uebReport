@@ -542,7 +542,10 @@ $(function ($) {
             valor: report.dateStart
         });
 
-        report.readData();
+        if(colunaDate !== "")
+            report.readData();
+        else
+            toast("campo de data não encontrado", "toast-warning");
 
     }).off("change", "#dataFinal").on("change", "#dataFinal", function () {
         let report = reports[$(this).data("rel")];
