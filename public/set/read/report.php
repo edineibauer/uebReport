@@ -2,14 +2,15 @@
 
 use \Config\Config;
 
-
 $filter['regras'] = json_encode(filter_input(INPUT_POST, 'filter', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY));
 $filter['entidade'] = filter_input(INPUT_POST, 'entity', FILTER_DEFAULT);
 $filter['ordem'] = filter_input(INPUT_POST, 'order', FILTER_DEFAULT);
 $filter['decrescente'] = filter_input(INPUT_POST, 'reverse', FILTER_VALIDATE_BOOLEAN);
 $filter['agrupamento'] = filter_input(INPUT_POST, 'aggroup', FILTER_DEFAULT);
-$filter['soma'] = filter_input(INPUT_POST, 'soma', FILTER_DEFAULT);
-$filter['media'] = filter_input(INPUT_POST, 'media', FILTER_DEFAULT);
+$filter['soma'] = filter_input(INPUT_POST, 'soma', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+$filter['media'] = filter_input(INPUT_POST, 'media', FILTER_DEFAULT, FILTER_REQUIRE_ARRAY);
+$filter['soma'] = !empty($filter['soma']) ? json_encode($filter['soma']) : "";
+$filter['media'] = !empty($filter['media']) ? json_encode($filter['media']) : "";
 
 $limit = filter_input(INPUT_POST, 'limit', FILTER_VALIDATE_INT);
 $limit = empty($limit) ? LIMITOFFLINE : $limit;
