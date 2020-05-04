@@ -425,11 +425,11 @@ function privateChartGetNumberDaysMonth(month) {
  * @param report
  * @returns {string}
  */
-function findColumnDate(report) {
+function findColumnDate(entity) {
     let colunaDate = "";
     let nivelColunaDate = -1;
-    for(let column in dicionarios[report.entity]) {
-        if(dicionarios[report.entity][column].format === "datetime") {
+    for(let column in dicionarios[entity]) {
+        if(dicionarios[entity][column].format === "datetime") {
             if(column.indexOf("cadastro") > -1) {
                 if(nivelColunaDate < 5) {
                     colunaDate = column;
@@ -447,7 +447,7 @@ function findColumnDate(report) {
                 }
             }
 
-        } else if(dicionarios[report.entity][column].format === "date") {
+        } else if(dicionarios[entity][column].format === "date") {
             if(column.indexOf("cadastro") > -1) {
                 if(nivelColunaDate < 4) {
                     colunaDate = column;
@@ -517,9 +517,9 @@ $(function ($) {
     }).off("change", "#dataInicial").on("change", "#dataInicial", function () {
         let report = reports[$(this).data("rel")];
         report.dateStart = $(this).val();
-        let colunaDate = findColumnDate(report);
+        let colunaDate = findColumnDate(report.entity);
 
-        if(typeof report.report[0] !== "object") {
+        if(isEmpty(report.report) || typeof report.report[0] !== "object") {
             report.report = [];
             report.report.push({
                 columnName: "regras",
@@ -569,9 +569,9 @@ $(function ($) {
         let report = reports[$(this).data("rel")];
         report.dateEnd = $(this).val();
 
-        let colunaDate = findColumnDate(report);
+        let colunaDate = findColumnDate(report.entity);
 
-        if(typeof report.report[0] !== "object") {
+        if(isEmpty(report.report) || typeof report.report[0] !== "object") {
             report.report = [];
             report.report.push({
                 columnName: "regras",
