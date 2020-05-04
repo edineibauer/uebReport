@@ -32,7 +32,7 @@ $(function () {
     if(USER.setor === "admin") {
         for (let i in grids) {
             let $this = grids[i];
-            let $sum = $this.$element.find(".sum-aggroup").html("");
+            let $sum = $this.$element.find(".sum-aggroup");
             if(!$this.$element.find(".aggroup").find("option").length) {
                 let $aggroup = $this.$element.find(".aggroup").html("<option value='' selected='selected'>agrupar por...</option>");
                 for (let col in dicionarios[$this.entity]) {
