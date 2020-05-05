@@ -256,9 +256,6 @@ $(function () {
         $filter.find(".table-filter-columns, .table-filter-operator, .table-filter-value").val("");
         $filter.find(".table-filter-columns:eq(0)").nextAll(".table-filter-columns").remove();
 
-        let innerField = grid.$filterGroup.closest(".inner_div").find(".grupo-join-field-select").val();
-        console.log(innerField);
-
         /**
          * Adiciona filtro a lista de filtros na UI
          */

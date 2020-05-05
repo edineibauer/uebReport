@@ -107,7 +107,7 @@ class Report
         foreach ($this->queryDeclaration as $entity => $logic)
             $queryDeclarationString .= ($queryDeclarationString !== "" ? " " : "") . "{$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
-        $queryOrder = "ORDER BY " . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($offset) && $offset > 0 ? " OFFSET " . $offset : "");
+        $queryOrder = "ORDER BY " . $this->report['entidade'] . "." . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($offset) && $offset > 0 ? " OFFSET " . $offset : "");
 
         $queryGroup = "";
         if(!empty($this->report['agrupamento'])) {
