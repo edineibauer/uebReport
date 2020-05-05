@@ -111,18 +111,18 @@ class Report
 
         $queryGroup = "";
         if(!empty($this->report['agrupamento'])) {
-            $queryGroup = "GROUP BY " . $this->report['agrupamento'];
-            $querySelect .= ", COUNT(id) as contagem";
+            $queryGroup = "GROUP BY {$this->report['entidade']}." . $this->report['agrupamento'];
+            $querySelect .= ", COUNT({$this->report['entidade']}.id) as contagem";
 
             $soma = (!empty($this->report['soma'])) ? json_decode($this->report['soma'], !0) : [];
             $media = (!empty($this->report['media'])) ? json_decode($this->report['media'], !0) : [];
             if(!empty($soma)) {
                 foreach ($soma as $item)
-                    $querySelect .= ", SUM({$item}) as {$item}";
+                    $querySelect .= ", SUM({$this->report['entidade']}.{$item}) as {$item}";
             }
             if(!empty($media)) {
                 foreach ($media as $item)
-                    $querySelect .= ", AVG({$item}) as {$item}";
+                    $querySelect .= ", AVG({$this->report['entidade']}.{$item}) as {$item}";
             }
         }
 
