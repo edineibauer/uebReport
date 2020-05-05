@@ -100,11 +100,17 @@ $(function () {
         let identificador = $(this).attr("rel");
         let grid = grids[identificador];
         grid.filterRegraOperador = $(this).attr("data-rel");
+        let nameRegra = (grid.filterRegraOperador === "inner_join" ? "grupo de inclusão" : "grupo de exclusão");
         let $logic = grid.$element.find("#filter-logic");
         grid.$element.find(".btn-new-group").addClass("disabled").attr("disabled", "disabled");
         getTemplates().then(tpl => {
-            if (grid.filterRegraOperador !== "group")
-                $logic.append("<div class='col inner_div'><hr class='col'><div class='col font-small' style='margin: -18px 0 4px 5px'>" + grid.filterRegraOperador.replace("_", " ") + "</div></div>");
+            if (grid.filterRegraOperador !== "group") {
+                let $grupoFieldDic = $("<div class='col inner_div'><hr class='col'><div class='left font-small' style='margin: -15px 0 4px 5px'>" + nameRegra + "</div><div class='left font-small grupo-join-field' style='margin: -24px 0 4px 5px;'></div></div>").appendTo($logic);
+                let $grupoField = $("<select class='theme-text-aux grupo-join-field-select' rel='" + identificador + "'><option value='id' class='theme-text'>id</option></select>").appendTo($grupoFieldDic.find(".grupo-join-field"));
+
+                for(let i in dicionarios[grid.entity])
+                    $grupoField.append("<option value='" + i + "' class='theme-text'>" + dicionarios[grid.entity][i].nome + "</option>")
+            }
             $logic.append(Mustache.render(tpl.filter_group, {identificador: identificador}));
         });
 
@@ -205,6 +211,7 @@ $(function () {
         if (grid.filterRegraOperador !== "group") {
             grid.filter.push({
                 tipo: grid.filterRegraOperador,
+                tipoColumn: grid.$filterGroup.prevAll(".inner_div").last().find(".grupo-join-field-select").val(),
                 grupos: [],
                 identificador: grid.identificador,
                 id: Date.now() + Math.floor((Math.random() * 1000)),
@@ -217,6 +224,7 @@ $(function () {
         } else if (isEmpty(grid.filter)) {
             grid.filter.push({
                 tipo: 'select',
+                tipoColumn: "",
                 grupos: [],
                 identificador: grid.identificador,
                 id: Date.now() + Math.floor((Math.random() * 1000)),
@@ -248,6 +256,9 @@ $(function () {
         $filter.find(".table-filter-columns, .table-filter-operator, .table-filter-value").val("");
         $filter.find(".table-filter-columns:eq(0)").nextAll(".table-filter-columns").remove();
 
+        let innerField = grid.$filterGroup.closest(".inner_div").find(".grupo-join-field-select").val();
+        console.log(innerField);
+
         /**
          * Adiciona filtro a lista de filtros na UI
          */
@@ -262,6 +273,14 @@ $(function () {
             grid.$element.find(".modal-filter").addClass("hide");
             grid.readData()
         });
+
+    }).off("change", ".grupo-join-field-select").on("change", ".grupo-join-field-select", function () {
+        let $inner = $(this).closest(".inner_div");
+        let grid = grids[$(this).attr("rel")];
+        let index = grid.$element.find("#filter-logic").find(".inner_div").index($inner);
+
+        if(typeof grid.filter[index+1] === "object")
+            grid.filter[index+1].tipoColumn = $(this).val();
 
     }).off("click", ".btn-badge-remove").on("click", ".btn-badge-remove", function () {
         let identificador = $(this).attr("rel");
