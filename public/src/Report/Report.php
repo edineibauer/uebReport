@@ -76,7 +76,7 @@ class Report
 
     private function start()
     {
-        $querySelect = "SELECT *";
+        $querySelect = "SELECT {$this->report['entidade']}.*";
         $this->queryDeclaration[$this->report['entidade']] = ["tipo" => "FROM", "on" => ""];
         $queryLogic = "WHERE";
 
@@ -187,7 +187,7 @@ class Report
                     $meta = new Meta($item);
                     $meta->setValue($valor);
                     $tipo = $meta->getType();
-                    $valor = $meta->getValue();
+                    $valorTipado = $meta->getValue();
                     break;
                 }
             }
