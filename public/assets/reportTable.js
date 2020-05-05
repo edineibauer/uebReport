@@ -436,5 +436,25 @@ $(function () {
                 toast("Relatório Criado", 2500, "toast-success")
             })
         }
+
+    }).off("click", "#gerar-card-informativo").on("click", "#gerar-card-informativo", function () {
+        let nome = "";
+        if (nome = prompt("Dê um nome para seu Card informativo:")) {
+            let id = $(this).attr("rel");
+            let grid = grids[id];
+
+            db.exeCreate("relatorios_card", {
+                nome: nome,
+                entidade: grid.entity,
+                regras: JSON.stringify(grid.filter),
+                ordem: grid.order,
+                decrescente: grid.orderPosition,
+                agrupamento: grid.filterAggroup,
+                soma: JSON.stringify(grid.filterAggroupSum),
+                media: JSON.stringify(grid.filterAggroupMedia)
+            }).then(() => {
+                toast("Card Informativo Criado", 2500, "toast-success")
+            })
+        }
     })
 })
