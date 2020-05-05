@@ -211,7 +211,7 @@ $(function () {
         if (grid.filterRegraOperador !== "group") {
             grid.filter.push({
                 tipo: grid.filterRegraOperador,
-                tipoColumn: grid.$filterGroup.prevAll(".inner_div").last().find(".grupo-join-field-select").val(),
+                tipoColumn: grid.$filterGroup.prevAll(".inner_div").first().find(".grupo-join-field-select").val(),
                 grupos: [],
                 identificador: grid.identificador,
                 id: Date.now() + Math.floor((Math.random() * 1000)),
