@@ -95,9 +95,9 @@ class Report
                     if ($regra['tipo'] === 'select') {
                         $queryLogic .= $query;
                     } elseif ($regra['tipo'] === "inner_join") {
-                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.id IN ( SELECT {$this->report['entidade']}.id FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
+                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
                     } elseif ($regra['tipo'] === "outer_join") {
-                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.id NOT IN ( SELECT {$this->report['entidade']}.id FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
+                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} NOT IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
                     }
                 }
             }
