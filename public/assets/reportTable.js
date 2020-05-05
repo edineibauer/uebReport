@@ -337,10 +337,12 @@ $(function () {
 
     }).off("change", ".table-filter-columns").on("change", ".table-filter-columns", function () {
         let $this = $(this);
-        if ($(this).val() !== "") {
-            let column = $this.val();
+        let column = $this.val();
+        if (column !== "") {
             let entity = $this.data("entity");
             let identificador = $this.attr("rel");
+
+            $(".table-filter-operator > .dateOption").addClass("hide");
             if (dicionarios[entity][column].key === "relation") {
                 let $selectRelation = $('<select class="col s12 m3 table-filter-columns" data-entity="' + dicionarios[entity][column].relation + '" data-rel="' + ($this.siblings(".table-filter-columns").length + 1) + '" rel="' + identificador + '"></select>').insertAfter($this);
                 $selectRelation.html("<option disabled='disabled' class='color-text-gray' selected='selected' value=''>coluna...</option>");
@@ -348,6 +350,8 @@ $(function () {
                     $selectRelation.append("<option value='" + col + "' >" + meta.nome + "</option>")
                 });
                 $this.siblings(".table-filter-operator").addClass("hide");
+            } else if(dicionarios[entity][column].format === "datetime" || dicionarios[entity][column].format === "date") {
+                $(".table-filter-operator > .dateOption").removeClass("hide");
             } else {
                 $this.siblings(".table-filter-operator").removeClass("hide");
                 $this.nextAll(".table-filter-columns").remove();

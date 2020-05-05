@@ -222,6 +222,18 @@ class Report
                     break;
                 case 'menor igual a':
                     $query .= " {$column} <= {$valorTipado}";
+                    break;
+                case 'menor que hoje - X dias':
+                    $query .= " {$column} < CURDATE() - INTERVAL {$valor} DAY";
+                    break;
+                case 'menor igual a hoje - X dias':
+                    $query .= " {$column} <= CURDATE() - INTERVAL {$valor} DAY";
+                    break;
+                case 'maior que hoje - X dias':
+                    $query .= " {$column} > CURDATE() - INTERVAL {$valor} DAY";
+                    break;
+                case 'maior igual a hoje - X dias':
+                    $query .= " {$column} >= CURDATE() - INTERVAL {$valor} DAY";
             }
         }
 
