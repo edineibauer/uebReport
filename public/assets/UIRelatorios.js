@@ -32,7 +32,7 @@ function gridTdFilterValue(value, meta) {
                 resposta += (value.indexOf(meta.allow.options[i].valor.toString()) > -1 ? ((resposta !== "" ? ", " : "") + meta.allow.options[i].representacao) : "");
 
             value = resposta;
-        } else if (meta.format === "boolean") {
+        } else if (meta.group === "boolean") {
             value = "<div class='activeBoolean" + (value == 1 ? " active" : "") + "'></div>";
         } else if (['folder', 'extend'].indexOf(meta.format) > -1) {
             return getRelevantTitle(meta.relation, value, 1, !1)
@@ -112,6 +112,8 @@ function reportTr(identificador, entity, data, fields) {
         if (typeof data[e.column] !== "undefined") {
             let tr = {
                 id: data.id,
+                column: e.column,
+                show: e.show,
                 entity: gridContent.entity,
                 style: '',
                 class: '',
@@ -134,7 +136,6 @@ function reportTr(identificador, entity, data, fields) {
 }
 
 function reportTable(dataReport, $element) {
-
     let identificador = Math.floor((Math.random() * 1000)) + "" + Date.now();
 
     reports = [];
@@ -162,7 +163,7 @@ function reportTable(dataReport, $element) {
         historic: 0,
         loadingTime: null,
         loadingHtml: null,
-        fields: [],
+        fields: !isEmpty(dataReport.fields) ? JSON.parse(dataReport.fields) : [],
 
         setFields: function (fields) {
             this.fields = fields;
@@ -673,7 +674,44 @@ $(function ($) {
         else
             $(this).append("<i class='material-icons grid-order-by-arrow left padding-8'>arrow_drop_down</i>");
 
-        report.readData()
+        report.readData();
+
+    }).off("click", ".showHideField").on("click", ".showHideField", function () {
+        let $this = $(this);
+        let val = $this.val();
+        let checked = $this.is(":checked");
+        let identificador = $this.data("rel");
+        let report = reports[identificador];
+        let th = report.$element.find("thead").find("th[rel='" + val + "']");
+        let td = report.$element.find("tbody").find("td[rel='" + val + "']");
+        report.fields.find(s => s.column === val).show = checked;
+        if (checked) {
+            th.removeClass("hide");
+            td.removeClass("hide")
+        } else {
+            th.addClass("hide");
+            td.addClass("hide")
+        }
+
+    }).off("click", ".report-header-option").on("click", ".report-header-option", function () {
+        let $this = $(this);
+        let identificador = $this.data("rel");
+        let report = reports[identificador];
+        getTemplates().then(tpl => {
+            $this.parent().append(Mustache.render(tpl.grid_content_card_header, {
+                identificador: $this.data("rel"),
+                entity: $this.data("entity"),
+                columns: report.fields
+            }));
+            let $cardHeader = $(".grid_content_card_header");
+            $(document).on("mouseup", function (e) {
+                if (!$cardHeader.is(e.target) && $cardHeader.has(e.target).length === 0) {
+                    $cardHeader.remove();
+                    $(document).off("mouseup")
+                }
+            })
+        });
+
     }).off("click", "#enviar-mensagem").on("click", "#enviar-mensagem", function () {
 
         let colunaUsuario = null, options = [], report = [];

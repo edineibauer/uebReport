@@ -1,6 +1,6 @@
 <tr id="row-{{entity}}-{{id}}" style="border: none;">
     {{#fields}}
-        <td class="padding-16 {{class}}" style="{{style}}">
+        <td rel="{{column}}" class="padding-16 {{class}}{{^show}} hide{{/show}}" style="{{style}}">
             <span class="td-value">{{{value}}}</span>
         </td>
     {{/fields}}

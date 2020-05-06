@@ -104,14 +104,20 @@
 
         <table class="table-all" style="border: none">
             <thead>
-            <tr class="no-select">
+            <tr class="no-select relative">
                 {{#fields}}
-                    <th>
-                    <span class="pointer grid-order-by" data-column="{{column}}" rel="{{identificador}}">
-                        <span class="left padding-small padding-8">{{nome}}</span>
-                    </span>
-                </th>
+                    <th rel="{{column}}"{{^show}} class="hide"{{/show}}>
+                        <span class="pointer grid-order-by" data-column="{{column}}" rel="{{identificador}}">
+                            <span class="left padding-small padding-8">{{nome}}</span>
+                        </span>
+                    </th>
                 {{/fields}}
+
+                <th style="position: absolute;right: 33px;padding: 15px 10px 10px;">
+                    <div class="col right padding-left pointer relative report-header-option" data-rel="{{identificador}}">
+                        <i class="material-icons">more_vert</i>
+                    </div>
+                </th>
             </tr>
             </thead>
             <tbody class="relative"></tbody>

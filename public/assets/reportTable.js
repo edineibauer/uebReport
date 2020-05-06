@@ -431,7 +431,8 @@ $(function () {
                 decrescente: grid.orderPosition,
                 agrupamento: grid.filterAggroup,
                 soma: JSON.stringify(grid.filterAggroupSum),
-                media: JSON.stringify(grid.filterAggroupMedia)
+                media: JSON.stringify(grid.filterAggroupMedia),
+                fields: JSON.stringify(grid.fields)
             }).then(() => {
                 toast("Relatório Criado", 2500, "toast-success")
             })
