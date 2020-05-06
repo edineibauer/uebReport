@@ -451,21 +451,25 @@ $(function () {
              * Obtém a cor de theme-d1 para adicionar como a cor padrão do card relatórios
              */
             let cor = $(".theme-d1").length ? $(".theme-d1").css("background-color") : THEME;
-            if(!/^#/.test(cor)) {
-                let hexDigits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+            let cortexto = $(".theme-d1").length ? $(".theme-d1").css("color") : THEMETEXT;
 
-                function hex(x) {
-                    return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
-                }
+            let hexDigits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
 
-                //Function to convert rgb color to hex format
-                function rgb2hex(rgb) {
-                    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-                    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
-                }
-
-                cor = rgb2hex(cor);
+            function hex(x) {
+                return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
             }
+
+            //Function to convert rgb color to hex format
+            function rgb2hex(rgb) {
+                rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+                return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+            }
+
+            if(!/^#/.test(cor))
+                cor = rgb2hex(cor);
+
+            if(!/^#/.test(cortexto))
+                cortexto = rgb2hex(cortexto);
 
             /**
              * Cria card no banco
@@ -479,7 +483,8 @@ $(function () {
                 agrupamento: grid.filterAggroup,
                 soma: JSON.stringify(grid.filterAggroupSum),
                 media: JSON.stringify(grid.filterAggroupMedia),
-                cor: cor,
+                cor_de_fundo: cor,
+                cor_do_texto: cortexto,
                 icone: ""
             }).then(() => {
                 toast("Card Informativo Criado", 2500, "toast-success")
