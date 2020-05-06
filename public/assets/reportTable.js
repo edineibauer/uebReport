@@ -439,10 +439,37 @@ $(function () {
 
     }).off("click", "#gerar-card-informativo").on("click", "#gerar-card-informativo", function () {
         let nome = "";
+
+        /**
+         * Obtém um titulo para o card de relatório
+         */
         if (nome = prompt("Dê um nome para seu Card informativo:")) {
             let id = $(this).attr("rel");
             let grid = grids[id];
 
+            /**
+             * Obtém a cor de theme-d1 para adicionar como a cor padrão do card relatórios
+             */
+            let cor = $(".theme-d1").length ? $(".theme-d1").css("background-color") : THEME;
+            if(!/^#/.test(cor)) {
+                let hexDigits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+
+                function hex(x) {
+                    return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+                }
+
+                //Function to convert rgb color to hex format
+                function rgb2hex(rgb) {
+                    rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+                    return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]);
+                }
+
+                cor = rgb2hex(cor);
+            }
+
+            /**
+             * Cria card no banco
+             */
             db.exeCreate("relatorios_card", {
                 nome: nome,
                 entidade: grid.entity,
@@ -451,7 +478,9 @@ $(function () {
                 decrescente: grid.orderPosition,
                 agrupamento: grid.filterAggroup,
                 soma: JSON.stringify(grid.filterAggroupSum),
-                media: JSON.stringify(grid.filterAggroupMedia)
+                media: JSON.stringify(grid.filterAggroupMedia),
+                cor: cor,
+                icone: ""
             }).then(() => {
                 toast("Card Informativo Criado", 2500, "toast-success")
             })
