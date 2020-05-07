@@ -1,0 +1,72 @@
+<thead>
+<tr class="no-select">
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Modelo</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Operação</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Coluna Y</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Coluna X</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Agrupamento</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Ordenação</span>
+        </div>
+    </th>
+    <th>
+        <div>
+            <span class="left padding-small padding-8">Posição</span>
+        </div>
+    </th>
+    <th class="align-right" style="padding-right: 20px;padding-top: 14px;width: 100px;">Excluir</th>
+</tr>
+</thead>
+<tbody class="relative">
+{{#graficos}}
+    <tr id="row-cashback-46" style="border: none;">
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{type}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{operacao}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{y}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{x}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{group}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{order}}</span></span>
+        </td>
+        <td class="padding-16 td-list " style="">
+            <span class="td-value"><span style="padding: 1px 5px" class="left padding-right font-medium td-title">{{posicao}}</span></span>
+        </td>
+        <td class="tableActions" style="min-width: 170px;">
+            <button data-id="{{id}}" rel="{{identificadorReport}}" class="btn-grafico-delete right btn-floating color-white color-hover-text-red hover-shadow opacity hover-opacity-off">
+                <i class="material-icons">delete</i>
+            </button>
+        </td>
+    </tr>
+{{/graficos}}
+</tbody>

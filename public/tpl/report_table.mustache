@@ -93,11 +93,184 @@
                         <i class="material-icons left" style="padding-right: 5px">av_timer</i>
                         <div class="left padding-tiny">programar</div>
                     </button>
-                    <button class="btn theme radius opacity hover-opacity-off left"
-                            style="margin-bottom: 10px;">
+                    <button class="btn theme radius opacity hover-opacity-off left" id="gerar-grafico"
+                            style="margin-bottom: 10px;" rel="{{identificador}}">
                         <i class="material-icons left" style="padding-right: 5px">insert_chart_outlined</i>
                         <div class="left padding-tiny">gráfico</div>
                     </button>
+                </div>
+
+                <div class="modal-grafico modal-filter-content hide">
+                    <div class="panel">
+                        <div class="display-container radius animate-top card-4">
+                            <header class="container theme relative">
+                            <span class="theme-d3 padding-large opacity hover-opacity-off button margin-0 display-topright btn-close-modal"
+                                  rel="{{identificador}}">
+                                &times;
+                            </span>
+                                <h4 class="padding-8">Gráficos na Dashboard</h4>
+                            </header>
+                            <div class="panel padding-24">
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Modelo do gráfico</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-type">
+                                        <option value='line'>Linha</option>
+                                        <option value='area' selected='selected'>Linha com Área</option>
+                                        <option value='bar'>Colunas</option>
+                                        <option value='barHorizontal'>Colunas Horizontais</option>
+                                        <!--                                        <option value='timeline'>Linha do Tempo</option>-->
+                                        <option value='scatter'>Gráfico de Pontos</option>
+                                        <!--                                        <option value='bubble'>Bolhas</option>-->
+                                        <!--                                        <option value='heatmap'>Mapa de Calor</option>-->
+                                        <option value='pie'>Pizza</option>
+                                        <option value='donut'>Bolacha</option>
+                                        <option value='radialBar'>Barra Circular</option>
+                                        <option value='radar'>Radar Pentágono</option>
+                                    </select>
+                                </label>
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Operação</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-operacao">
+                                        <option value='soma' selected='selected'>Soma</option>
+                                        <option value='media'>Média</option>
+                                        <option value='marioria'>Maioria</option>
+                                        <option value='soma%'>Soma em %</option>
+                                        <option value='media%'>Média em %</option>
+                                        <option value='maioria%'>Maioria em %</option>
+                                    </select>
+                                </label>
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Coluna Y</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-y"></select>
+                                </label>
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Coluna X</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-x"></select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Agrupamento dos dados</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-group">
+                                        <option value='hour'>Hora</option>
+                                        <option value='day' selected="selected">Dia</option>
+                                        <option value='week'>Semana</option>
+                                        <option value='month'>Mês</option>
+                                        <option value='year'>Ano</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Ordenação</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-order">
+                                        <option value='x_decrescente' selected='selected'>X Decrescente</option>
+                                        <option value='x_crecente'>X Crecente</option>
+                                        <option value='y_decrescente'>Y Decrescente</option>
+                                        <option value='y_crecente'>Y Crecente</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Precisão</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-precision">
+                                        <option value='0' selected='selected'>Inteiro</option>
+                                        <option value='1'>1 casa</option>
+                                        <option value='2'>2 casas</option>
+                                        <option value='3'>3 casas</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Tamanho do gráfico</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-size">
+                                        <option value='100%'>100%</option>
+                                        <option value='50%' selected='selected'>50%</option>
+                                        <option value='33%'>33%</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Posição na dashboar</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-posicao">
+                                        <option value='20' selected='selected'>auto</option>
+                                        <option value='1'>1</option>
+                                        <option value='2'>2</option>
+                                        <option value='3'>3</option>
+                                        <option value='4'>4</option>
+                                        <option value='5'>5</option>
+                                        <option value='6'>6</option>
+                                        <option value='7'>7</option>
+                                        <option value='8'>8</option>
+                                        <option value='9'>9</option>
+                                        <option value='10'>10</option>
+                                        <option value='11'>11</option>
+                                        <option value='12'>12</option>
+                                        <option value='13'>13</option>
+                                        <option value='14'>14</option>
+                                        <option value='15'>15</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Arredondamento das pontas</div>
+                                    <select class="col table-grafico-columns table-grafico-columns-rounded">
+                                        <option value='smooth' selected='selected'>Arredondado</option>
+                                        <option value='straight'>pontiagudo</option>
+                                        <option value='stepline'>quadrado</option>
+                                    </select>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Label Coluna Y</div>
+                                    <input type="text" class="col table-grafico-columns table-grafico-columns-label-y"/>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Label Coluna X</div>
+                                    <input type="text" class="col table-grafico-columns table-grafico-columns-label-x"/>
+                                </label>
+
+                                <div class="col"></div>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Valor Mínimo Y</div>
+                                    <input type="text"
+                                           class="col table-grafico-columns table-grafico-columns-minimo-y"/>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Valor Máximo Y</div>
+                                    <input type="text"
+                                           class="col table-grafico-columns table-grafico-columns-maximo-y"/>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Valor Mínimo X</div>
+                                    <input type="text"
+                                           class="col table-grafico-columns table-grafico-columns-minimo-x"/>
+                                </label>
+
+                                <label class="col s12 m3 padding-right">
+                                    <div class="col color-text-gray">Valor Máximo X</div>
+                                    <input type="text"
+                                           class="col table-grafico-columns table-grafico-columns-maximo-x"/>
+                                </label>
+
+                                <div class="col s12 m3 table-grafico-btn" style="padding: 15px 16px 0;">
+                                    <button title="aplicar filtro"
+                                            class="btb right radius theme hover-shadow opacity hover-opacity-off btn-table-grafico-apply"
+                                            style="padding: 10px 20px;"
+                                            rel="{{identificador}}">
+                                        <i class="material-icons left">add</i>
+                                        <span class="left" style="padding-left: 5px">Adicionar</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="display-container" style="overflow-x: auto;">
+                                <table class="table-all color-text-gray-dark" id="list-graficos"></table>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

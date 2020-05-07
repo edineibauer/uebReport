@@ -355,61 +355,6 @@ function goMessage(colunaUsuario, id, selecionados) {
     });
 }
 
-/**
- * Limite - atualiza valor da data de início com base no intervalo selecionado
- */
-function privateChartDateUpdateLimit(report, useStartDateInsteadDateEnd) {
-    useStartDateInsteadDateEnd = typeof useStartDateInsteadDateEnd !== "undefined";
-    let now = new Date((useStartDateInsteadDateEnd ? report.dateStart : report.dateEnd) + " 23:59:59");
-    let limit = (report.interval === "year" ? 365 : (report.interval === "month" ? privateChartGetNumberDaysMonth(now.getMonth()) - 1 : (report.interval === "week" ? 6 : 0)));
-
-    if (useStartDateInsteadDateEnd) {
-        let dateLimit = new Date(now.setDate(now.getDate() + limit));
-        report.dateEnd = dateLimit.getFullYear() + "-" + zeroEsquerda(dateLimit.getMonth() + 1) + "-" + zeroEsquerda(dateLimit.getDate());
-        $("#dataFinal").val(report.dateEnd)
-
-    } else {
-
-        let dateLimit = new Date(now.setDate(now.getDate() - limit));
-        report.dateStart = dateLimit.getFullYear() + "-" + zeroEsquerda(dateLimit.getMonth() + 1) + "-" + zeroEsquerda(dateLimit.getDate());
-        $("#dataInicial").val(report.dateStart)
-
-        report.dateEnd = moment(report.dateStart).add(limit, 'days').format("YYYY-MM-DD");
-        $("#dataFinal").val(report.dateEnd)
-    }
-
-    /**
-     * Encontrar campo data
-     */
-    let columnDate = null;
-    for (let d in dicionarios[report.entity]) {
-        if (dicionarios[report.entity][d].format === "datetime") {
-            columnDate = dicionarios[report.entity][d].column;
-        } else if (dicionarios[report.entity][d].format === "date") {
-            if (columnDate === null || dicionarios[report.entity][d].column.indexOf("cadastro") > -1)
-                columnDate = dicionarios[report.entity][d].column;
-        }
-    }
-    if(!isEmpty(columnDate)) {
-        // for(let i in report.filter) {
-        //     if(report.filter[i].column === columnDate)
-        //         report.filter.splice(i, 1);
-        // }
-
-        /*report.filter.push({
-            column: columnDate,
-            operator: "maior igual a",
-            value: report.dateStart
-        });*/
-
-        // report.filter.push({
-        //     column: columnDate,
-        //     operator: "menor igual a",
-        //     value: report.dateEnd
-        // });
-    }
-}
-
 function privateChartGetNumberDaysMonth(month) {
     if (month === 1)
         return 28;
@@ -429,38 +374,38 @@ function privateChartGetNumberDaysMonth(month) {
 function findColumnDate(entity) {
     let colunaDate = "";
     let nivelColunaDate = -1;
-    for(let column in dicionarios[entity]) {
-        if(dicionarios[entity][column].format === "datetime") {
-            if(column.indexOf("cadastro") > -1) {
-                if(nivelColunaDate < 5) {
+    for (let column in dicionarios[entity]) {
+        if (dicionarios[entity][column].format === "datetime") {
+            if (column.indexOf("cadastro") > -1) {
+                if (nivelColunaDate < 5) {
                     colunaDate = column;
                     nivelColunaDate = 5;
                 }
-            } else if(column === "data" || column === "date") {
-                if(nivelColunaDate < 3) {
+            } else if (column === "data" || column === "date") {
+                if (nivelColunaDate < 3) {
                     colunaDate = column;
                     nivelColunaDate = 3;
                 }
             } else {
-                if(nivelColunaDate < 1) {
+                if (nivelColunaDate < 1) {
                     colunaDate = column;
                     nivelColunaDate = 1;
                 }
             }
 
-        } else if(dicionarios[entity][column].format === "date") {
-            if(column.indexOf("cadastro") > -1) {
-                if(nivelColunaDate < 4) {
+        } else if (dicionarios[entity][column].format === "date") {
+            if (column.indexOf("cadastro") > -1) {
+                if (nivelColunaDate < 4) {
                     colunaDate = column;
                     nivelColunaDate = 4;
                 }
-            } else if(column === "data" || column === "date") {
-                if(nivelColunaDate < 2) {
+            } else if (column === "data" || column === "date") {
+                if (nivelColunaDate < 2) {
                     colunaDate = column;
                     nivelColunaDate = 2;
                 }
             } else {
-                if(nivelColunaDate < 0) {
+                if (nivelColunaDate < 0) {
                     colunaDate = column;
                     nivelColunaDate = 0;
                 }
@@ -468,6 +413,12 @@ function findColumnDate(entity) {
         }
     }
     return colunaDate;
+}
+
+function readGraficosTable(id) {
+    return getGraficos().then(graficos => {
+        $("#list-graficos").htmlTemplate('graficos_list', {graficos: graficos, identificadorReport: id});
+    });
 }
 
 $(function ($) {
@@ -520,7 +471,7 @@ $(function ($) {
         report.dateStart = $(this).val();
         let colunaDate = findColumnDate(report.entity);
 
-        if(isEmpty(report.report) || typeof report.report[0] !== "object") {
+        if (isEmpty(report.report) || typeof report.report[0] !== "object") {
             report.report = [];
             report.report.push({
                 columnName: "regras",
@@ -533,18 +484,18 @@ $(function ($) {
                 tipo: "select"
             });
             report.report[0].grupos.push({
-                filtros:[]
+                filtros: []
             });
         } else {
-            for(let i in report.report[0].grupos[0].filtros) {
-                if(report.report[0].grupos[0].filtros[i].id === "99999998765") {
+            for (let i in report.report[0].grupos[0].filtros) {
+                if (report.report[0].grupos[0].filtros[i].id === "99999998765") {
                     report.report[0].grupos[0].filtros.splice(i, 1);
                     break;
                 }
             }
         }
 
-        if(report.dateStart !== "") {
+        if (report.dateStart !== "") {
             report.report[0].grupos[0].filtros.push({
                 columnName: "filtros",
                 columnRelation: "relatorios_filtro",
@@ -561,7 +512,7 @@ $(function ($) {
             });
         }
 
-        if(colunaDate !== "")
+        if (colunaDate !== "")
             report.readData();
         else
             toast("campo de data não encontrado", "toast-warning");
@@ -572,7 +523,7 @@ $(function ($) {
 
         let colunaDate = findColumnDate(report.entity);
 
-        if(isEmpty(report.report) || typeof report.report[0] !== "object") {
+        if (isEmpty(report.report) || typeof report.report[0] !== "object") {
             report.report = [];
             report.report.push({
                 columnName: "regras",
@@ -585,18 +536,18 @@ $(function ($) {
                 tipo: "select"
             });
             report.report[0].grupos.push({
-                filtros:[]
+                filtros: []
             });
         } else {
-            for(let i in report.report[0].grupos[0].filtros) {
-                if(report.report[0].grupos[0].filtros[i].id === "99999998764") {
+            for (let i in report.report[0].grupos[0].filtros) {
+                if (report.report[0].grupos[0].filtros[i].id === "99999998764") {
                     report.report[0].grupos[0].filtros.splice(i, 1);
                     break;
                 }
             }
         }
 
-        if(report.dateEnd !== "") {
+        if (report.dateEnd !== "") {
             report.report[0].grupos[0].filtros.push({
                 columnName: "filtros",
                 columnRelation: "relatorios_filtro",
@@ -613,7 +564,7 @@ $(function ($) {
             });
         }
 
-        if(colunaDate !== "")
+        if (colunaDate !== "")
             report.readData();
         else
             toast("campo de data não encontrado", "toast-warning");
@@ -761,5 +712,124 @@ $(function ($) {
                 toast("Não existe usuários neste relatório.", 3500, "toast-warning")
             }
         });
-    });
+
+    }).off("click", "#gerar-grafico").on("click", "#gerar-grafico", function () {
+        let id = $(this).attr("rel");
+        let report = reports[id];
+        report.$element.find(".modal-grafico").removeClass("hide");
+        let contentY = "";
+        let contentX = "";
+        for (let column in dicionarios[report.entity]) {
+            let meta = dicionarios[report.entity][column];
+            if (meta.key !== "publisher" && meta.key !== "information" && meta.key !== "identifier") {
+                contentY += "<option value='" + column + "'>" + meta.nome + "</option>";
+                contentX += "<option value='" + column + "'" + (meta.format === "datetime" || meta.format === "date" ? " selected='selected'" : "") + ">" + meta.nome + "</option>"
+            }
+        }
+        readGraficosTable(id);
+
+        $("#core-overlay").addClass("active activeBold");
+        $(".table-grafico-columns-y").attr("data-id", id).html("<option value='' selected='selected'>Nenhum</option>" + contentY);
+        $(".table-grafico-columns-x").html("<option disabled='disabled' value='' selected='selected'>Selecione o X</option>" + contentX);
+
+    }).off("click", ".btn-table-grafico-apply").on("click", ".btn-table-grafico-apply", function () {
+        let identificador = $(this).attr("rel");
+        let y = $(".table-grafico-columns-y").val();
+        let x = $(".table-grafico-columns-x").val();
+        let type = $(".table-grafico-columns-type").val();
+        let operacao = $(".table-grafico-columns-operacao").val();
+        let group = $(".table-grafico-columns-group").val();
+        let order = $(".table-grafico-columns-order").val();
+        let precision = $(".table-grafico-columns-precision").val();
+        let size = $(".table-grafico-columns-size").val();
+        let posicao = $(".table-grafico-columns-posicao").val();
+        let labely = $(".table-grafico-columns-label-y").val();
+        let labelx = $(".table-grafico-columns-label-x").val();
+        let rounded = $(".table-grafico-columns-rounded").val();
+        let minimoY = $(".table-grafico-columns-minimo-y").val();
+        let maximoY = $(".table-grafico-columns-maximo-y").val();
+        let minimoX = $(".table-grafico-columns-minimo-x").val();
+        let maximoX = $(".table-grafico-columns-maximo-x").val();
+        let id = $(".table-grafico-columns-y").attr("data-id");
+
+        $(".table-grafico-columns").css("border-bottom-color", "#009688").siblings("div").addClass("color-text-gray").css("color", "initial");
+        $(".required-grafico").remove();
+
+        switch (type) {
+            case "donut":
+                if (typeof x !== "string" || isEmpty(x)) {
+                    toast("informe o X", 3000, "toast-warning");
+                    $(".table-grafico-columns-x").css("border-bottom-color", "red").siblings("div").removeClass("color-text-gray").css("color", "red").append("<div class='required-grafico padding-small' style='display: inline'>*</div>");
+                    return
+                }
+                if (typeof y !== "string" || isEmpty(y)) {
+                    toast("informe o Y", 3000, "toast-warning");
+                    $(".table-grafico-columns-y").css("border-bottom-color", "red").siblings("div").removeClass("color-text-gray").css("color", "red").append("<div class='required-grafico padding-small' style='display: inline'>*</div>");
+                    return
+                }
+                break
+        }
+
+        if (type === "radialBar" && (isEmpty(maximo) || isNaN(maximo))) {
+            toast("Valor máximo é obrigatório para o Modelo barra Circular", 5000, "toast-warning");
+            $(".table-grafico-columns-maximo").css("border-bottom-color", "red").siblings("div").removeClass("color-text-gray").css("color", "red").append("<div class='required-grafico padding-small' style='display: inline'>*</div>");
+            return
+        }
+        if (isEmpty(x) && ["radialBar"].indexOf(type) === -1) {
+            toast("informe o X", 3000, "toast-warning");
+            $(".table-grafico-columns-x").css("border-bottom-color", "red").siblings("div").removeClass("color-text-gray").css("color", "red").append("<div class='required-grafico padding-small' style='display: inline'>*</div>");
+            return
+        }
+
+        post("report", "create/grafico", {
+            x: x,
+            y: y,
+            entity: reports[id].entity,
+            type: type,
+            group: group,
+            order: order,
+            precision: precision,
+            operacao: operacao,
+            size: size,
+            posicao: posicao,
+            minimoY: minimoY,
+            maximoY: maximoY,
+            minimoX: minimoX,
+            maximoX: maximoX,
+            labely: labely,
+            labelx: labelx,
+            rounded: rounded,
+            report: reports[identificador].id
+        }, function (g) {
+            if (g) {
+                updateGraficos().then(() => {
+                    readGraficosTable(identificador)
+                });
+                toast("Salvo com sucesso", 3500, "toast-success")
+            } else {
+                toast("erro ao enviar", 3000, "toast-error")
+            }
+        })
+    }).off("click", ".btn-grafico-delete").on("click", ".btn-grafico-delete", function () {
+        let identificador = $(this).attr("rel");
+        let id = $(this).attr("data-id");
+        if(confirm("excluir gráfico?")) {
+            post("report", "delete/grafico", {id: id}, function (g) {
+                updateGraficos().then(() => {
+                    readGraficosTable(identificador)
+                })
+            })
+        }
+    }).off("change", ".table-grafico-columns-type").on("change", ".table-grafico-columns-type", function () {
+        let v = $(this).val();
+        $(".table-grafico-columns").removeClass("disabled").removeAttr("disabled");
+        if (v === "radialBar") {
+            $(".table-grafico-columns-x").addClass("disabled").attr("disabled", "disabled").val("").trigger("change");
+            $(".table-grafico-columns-label-x").addClass("disabled").attr("disabled", "disabled").val("").trigger("change")
+        }
+    }).off("click", ".btn-close-modal").on("click", ".btn-close-modal", function () {
+        let report = reports[$(this).attr("rel")];
+        report.$element.find(".modal-filter, .modal-grafico").addClass("hide");
+        $("#core-overlay").removeClass("active activeBold");
+    })
 }, jQuery);

@@ -2,6 +2,12 @@
     background: #eeeeee;
 }
 
+.modal-filter-content {
+    top: 0;
+    max-height: calc(100vh - 200px);
+    overflow: auto!important;
+}
+
 #report {
     max-width: 1300px;
     margin-left: auto;
