@@ -644,6 +644,8 @@ $(function ($) {
             td.addClass("hide")
         }
 
+        post("report", "saveFieldsGrid", {fields: report.fields});
+
     }).off("click", ".report-header-option").on("click", ".report-header-option", function () {
         let $this = $(this);
         let identificador = $this.data("rel");
