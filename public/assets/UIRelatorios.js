@@ -296,7 +296,7 @@ function reportTable(dataReport, $element) {
         },
 
         getShow: function () {
-            var fields = (isEmpty(report.fields) ? getFields(report.entity, !0) : Promise.all([]));
+            var fields = (isEmpty(report.fields) ? getFields(report.entity, !0, 'report') : Promise.all([]));
             return Promise.all([fields]).then(r => {
                 if (isEmpty(report.fields))
                     this.fields = r[0];
@@ -644,7 +644,7 @@ $(function ($) {
             td.addClass("hide")
         }
 
-        post("report", "saveFieldsGrid", {fields: report.fields});
+        post("report", "saveFieldsGrid", {type: "report", entity: report.entity, fields: report.fields});
 
     }).off("click", ".report-header-option").on("click", ".report-header-option", function () {
         let $this = $(this);
