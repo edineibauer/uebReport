@@ -35,11 +35,12 @@ $(function () {
             let $sum = $this.$element.find(".sum-aggroup");
             if(!$this.$element.find(".aggroup").find("option").length) {
                 let $aggroup = $this.$element.find(".aggroup").html("<option value='' selected='selected'>agrupar por...</option>");
+
                 for (let col in dicionarios[$this.entity]) {
                     $aggroup.append("<option value='" + col + "'>" + dicionarios[$this.entity][col].nome + "</option>");
 
                     if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[$this.entity][col].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[$this.entity][col].key) === -1)
-                        $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><span class='theme-text-aux left' style='position: absolute;top: -6px;font-size: 11px;'> " + dicionarios[$this.entity][col].nome + "</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px'>soma</span><span class='theme-text-aux left' style='position: absolute;top: 27px;font-size:9px; left:25px'>média</span><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='sum-aggroup-col' style='margin: 22px 4px 0 2px' /><input type='checkbox' rel='" + identificador + "' value='" + col + "' class='media-aggroup-col' /></div>");
+                        $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><select class='theme-text-aux aggreted-field-type' data-rel='" + identificador + "' rel='" + col + "'><option value='' class='theme-text'>" + dicionarios[$this.entity][col].nome + "</option><option value='soma' class='theme-text'>soma</option><option value='media' class='theme-text'>média</option><option value='maior' class='theme-text'>maior</option><option value='menor' class='theme-text'>menor</option></select></div>");
                 }
             }
         }
@@ -371,49 +372,36 @@ $(function () {
             grid.$element.find(".sum-aggroup").addClass("hide");
             grid.filterAggroupSum = [];
             grid.filterAggroupMedia = [];
+            grid.filterAggroupMaior = [];
+            grid.filterAggroupMenor = [];
         }
 
         grid.readData();
 
-    }).off("click", ".sum-aggroup-col").on("click", ".sum-aggroup-col", function () {
-        let identificador = $(this).attr("rel");
+    }).off("change", ".aggreted-field-type").on("change", ".aggreted-field-type", function () {
+        let identificador = $(this).attr("data-rel");
         let grid = grids[identificador];
-        let val = $(this).val();
-        if($(".media-aggroup-col[value='" + val + "']").is(":checked"))
-            $(".media-aggroup-col[value='" + val + "']").prop("checked", !1);
 
-        let soma = [];
-        grid.$element.find(".sum-aggroup-col:checked").each(function (i, e) {
-            soma.push($(e).val())
+        grid.filterAggroupSum = [];
+        grid.filterAggroupMedia = [];
+        grid.filterAggroupMaior = [];
+        grid.filterAggroupMenor = [];
+        $(".aggreted-field-type").each(function(i, e) {
+            switch ($(e).val()) {
+                case 'soma':
+                    grid.filterAggroupSum.push($(e).attr("rel"));
+                    break;
+                case 'media':
+                    grid.filterAggroupMedia.push($(e).attr("rel"));
+                    break;
+                case 'maior':
+                    grid.filterAggroupMaior.push($(e).attr("rel"));
+                    break;
+                case 'menor':
+                    grid.filterAggroupMenor.push($(e).attr("rel"));
+                    break;
+            }
         });
-        grid.filterAggroupSum = soma;
-
-        let media = [];
-        grid.$element.find(".media-aggroup-col:checked").each(function (i, e) {
-            media.push($(e).val());
-        });
-        grid.filterAggroupMedia = media;
-
-        grid.readData();
-
-    }).off("click", ".media-aggroup-col").on("click", ".media-aggroup-col", function () {
-        let identificador = $(this).attr("rel");
-        let grid = grids[identificador];
-        let val = $(this).val();
-        if($(".sum-aggroup-col[value='" + val + "']").is(":checked"))
-            $(".sum-aggroup-col[value='" + val + "']").prop("checked", !1);
-
-        let media = [];
-        grid.$element.find(".media-aggroup-col:checked").each(function (i, e) {
-            media.push($(e).val());
-        });
-        grid.filterAggroupMedia = media;
-
-        let soma = [];
-        grid.$element.find(".sum-aggroup-col:checked").each(function (i, e) {
-            soma.push($(e).val())
-        });
-        grid.filterAggroupSum = soma;
 
         grid.readData();
 

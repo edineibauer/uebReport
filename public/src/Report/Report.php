@@ -116,6 +116,9 @@ class Report
 
             $soma = (!empty($this->report['soma'])) ? json_decode($this->report['soma'], !0) : [];
             $media = (!empty($this->report['media'])) ? json_decode($this->report['media'], !0) : [];
+            $maior = (!empty($this->report['maior'])) ? json_decode($this->report['maior'], !0) : [];
+            $menor = (!empty($this->report['menor'])) ? json_decode($this->report['menor'], !0) : [];
+
             if(!empty($soma)) {
                 foreach ($soma as $item)
                     $querySelect .= ", SUM({$this->report['entidade']}.{$item}) as {$item}";
@@ -123,6 +126,14 @@ class Report
             if(!empty($media)) {
                 foreach ($media as $item)
                     $querySelect .= ", AVG({$this->report['entidade']}.{$item}) as {$item}";
+            }
+            if(!empty($maior)) {
+                foreach ($maior as $item)
+                    $querySelect .= ", MAX({$this->report['entidade']}.{$item}) as {$item}";
+            }
+            if(!empty($menor)) {
+                foreach ($menor as $item)
+                    $querySelect .= ", MIN({$this->report['entidade']}.{$item}) as {$item}";
             }
         }
 
