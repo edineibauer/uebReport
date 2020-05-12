@@ -18,7 +18,7 @@ async function reportRead(entity, filter, aggroup, soma, media, maior, menor, or
     reverse = (typeof reverse !== "undefined" ? (reverse ? !0 : !1) : !1);
     limit = parseInt(typeof limit === "number" ? limit : (localStorage.limitGrid ? localStorage.limitGrid : 15));
     limit = limit < parseInt(localStorage.limitGrid) ? parseInt(localStorage.limitGrid) : limit;
-    offset = parseInt((typeof offset === "number" ? offset : 0) - 1);
+    offset = parseInt(typeof offset === "number" ? offset : 0);
 
     /**
      * Se tiver mais resultados no back que não estão no front
