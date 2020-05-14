@@ -644,7 +644,7 @@ $(function ($) {
             td.addClass("hide")
         }
 
-        post("report", "saveFieldsGrid", {type: "report", entity: report.entity, fields: report.fields});
+        post("report", "saveFieldsGrid", {type: "report", entity: report.id, fields: report.fields});
 
     }).off("click", ".report-header-option").on("click", ".report-header-option", function () {
         let $this = $(this);
