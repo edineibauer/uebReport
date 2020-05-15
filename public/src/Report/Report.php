@@ -67,6 +67,14 @@ class Report
     }
 
     /**
+     * @return array
+     */
+    public function getReport(): array
+    {
+        return $this->report;
+    }
+
+    /**
      * @return int
      */
     public function getTotal(): int

@@ -736,6 +736,8 @@ $(function ($) {
 
     }).off("click", ".btn-table-grafico-apply").on("click", ".btn-table-grafico-apply", function () {
         let identificador = $(this).attr("rel");
+        let report = reports[identificador];
+
         let y = $(".table-grafico-columns-y").val();
         let x = $(".table-grafico-columns-x").val();
         let type = $(".table-grafico-columns-type").val();
@@ -801,7 +803,7 @@ $(function ($) {
             labely: labely,
             labelx: labelx,
             rounded: rounded,
-            report: reports[identificador].id
+            report: report.id
         }, function (g) {
             if (g) {
                 updateGraficos().then(() => {
