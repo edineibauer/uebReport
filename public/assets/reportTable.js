@@ -414,6 +414,7 @@ $(function () {
             db.exeCreate("relatorios", {
                 nome: nome,
                 entidade: grid.entity,
+                search: grid.search,
                 regras: JSON.stringify(grid.filter),
                 ordem: grid.order,
                 decrescente: grid.orderPosition,

@@ -153,6 +153,7 @@ function reportTable(dataReport, $element) {
         total: 0,
         limit: (localStorage.limitGrid ? parseInt(localStorage.limitGrid) : 15),
         page: 1,
+        search: dataReport.search,
         filterAggroup: dataReport.agrupamento,
         filterAggroupSum: isEmpty(dataReport.soma) ? [] : JSON.parse(dataReport.soma),
         filterAggroupMedia: isEmpty(dataReport.media) ? [] : JSON.parse(dataReport.media),
@@ -233,7 +234,7 @@ function reportTable(dataReport, $element) {
             this.setLoading();
 
             let offset = ($this.page * $this.limit) - $this.limit;
-            let result = reportRead($this.entity, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
+            let result = reportRead($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
             return Promise.all([result, getTemplates()]).then(r => {
                 result = r[0];
                 let templates = r[1];
