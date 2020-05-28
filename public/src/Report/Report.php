@@ -88,6 +88,14 @@ class Report
         $this->queryDeclaration[$this->report['entidade']] = ["tipo" => "FROM", "on" => ""];
         $queryLogic = "WHERE";
 
+        if(!empty($this->report['search'])) {
+            foreach (Metadados::getDicionario($this->report['entidade']) as $meta) {
+                if(!in_array($meta['key'], ["information", "identifier"]))
+                    $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . $meta['column'] . " LIKE '%{$this->report['search']}%'";
+            }
+            $queryLogic .= ")";
+        }
+
         if (!empty($this->report['regras'])) {
             $regras = json_decode($this->report['regras'], !0);
             if (is_array($regras)) {
