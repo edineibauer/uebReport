@@ -425,7 +425,7 @@ function readGraficosTable(id) {
 $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
-        dbLocal.exeRead("relatorios", parseInt(report)).then(report => {
+        db.exeRead("relatorios", parseInt(report)).then(report => {
             reportTable(report, $this);
         });
         return $this;
@@ -434,11 +434,11 @@ $(function ($) {
     /**
      * Menu de relatórios
      */
-    dbLocal.exeRead("relatorios").then(reports => {
+    db.exeRead("relatorios").then(reports => {
         let $menu = $("#report-menu").html("<ul>");
-        for (let i in reports) {
+        for (let i in reports)
             $menu.append("<li rel='" + reports[i].id + "' class='report-menu col container padding-8 theme-hover pointer' style='border-bottom-right-radius: 5px;border-top-right-radius: 5px;'>" + reports[i].nome + "</li>");
-        }
+
         $menu.append("</ul>");
     });
 
