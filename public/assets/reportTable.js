@@ -46,6 +46,7 @@ $(function () {
         }
     }
 
+    $(".btn-table-filter").removeClass("hide");
     $("#app").off("click", ".btn-table-filter").on("click", ".btn-table-filter", function () {
         let grid = grids[$(this).attr("rel")];
         let $filter = grid.$element.find(".table-filter");
