@@ -302,6 +302,20 @@ function reportTable(dataReport, $element) {
                 if (isEmpty(report.fields))
                     this.fields = r[0];
 
+                if(!this.fields.find(f => f.column === "contagem")) {
+                    this.fields.push({
+                        class: "",
+                        column: "contagem",
+                        first: true,
+                        format: "number",
+                        nome: "contagem",
+                        relation: null,
+                        show: true,
+                        style: "",
+                        template: ""
+                    });
+                }
+
                 return getTemplates().then(templates => {
                     return Mustache.render(templates.report_table, {
                         entity: report.entity,
