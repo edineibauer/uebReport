@@ -39,7 +39,7 @@ $(function () {
                 for (let col in dicionarios[$this.entity]) {
                     $aggroup.append("<option value='" + col + "'>" + dicionarios[$this.entity][col].nome + "</option>");
 
-                    if(["int", "double", "decimal", "float", "smallint"].indexOf(dicionarios[$this.entity][col].type) > -1 && ["identifier", "relation", "publisher"].indexOf(dicionarios[$this.entity][col].key) === -1)
+                    if(["identifier", "publisher"].indexOf(dicionarios[$this.entity][col].key) === -1)
                         $sum.append("<div class='left relative padding-right' style='margin-top: -5px'><select class='theme-text-aux aggreted-field-type' data-rel='" + identificador + "' rel='" + col + "'><option value='' class='theme-text'>" + dicionarios[$this.entity][col].nome + "</option><option value='soma' class='theme-text'>soma</option><option value='media' class='theme-text'>média</option><option value='maior' class='theme-text'>maior</option><option value='menor' class='theme-text'>menor</option></select></div>");
                 }
             }
