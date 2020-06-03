@@ -157,6 +157,8 @@ function reportTable(dataReport, $element) {
         filterAggroup: dataReport.agrupamento,
         filterAggroupSum: isEmpty(dataReport.soma) ? [] : JSON.parse(dataReport.soma),
         filterAggroupMedia: isEmpty(dataReport.media) ? [] : JSON.parse(dataReport.media),
+        filterAggroupMaior: isEmpty(dataReport.maior) ? [] : JSON.parse(dataReport.maior),
+        filterAggroupMenor: isEmpty(dataReport.menor) ? [] : JSON.parse(dataReport.menor),
         selecionados: [],
         order: dataReport.ordem,
         orderPosition: dataReport.decrescente,

@@ -422,6 +422,8 @@ $(function () {
                 agrupamento: grid.filterAggroup,
                 soma: JSON.stringify(grid.filterAggroupSum),
                 media: JSON.stringify(grid.filterAggroupMedia),
+                maior: JSON.stringify(grid.filterAggroupMaior),
+                menor: JSON.stringify(grid.filterAggroupMenor),
                 fields: JSON.stringify(grid.fields)
             }).then(() => {
                 toast("Relatório Criado", 2500, "toast-success")
@@ -474,6 +476,8 @@ $(function () {
                 agrupamento: grid.filterAggroup,
                 soma: JSON.stringify(grid.filterAggroupSum),
                 media: JSON.stringify(grid.filterAggroupMedia),
+                maior: JSON.stringify(grid.filterAggroupMaior),
+                menor: JSON.stringify(grid.filterAggroupMenor),
                 cor_de_fundo: cor,
                 cor_do_texto: cortexto,
                 icone: ""

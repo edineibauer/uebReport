@@ -1,6 +1,7 @@
 /**
  * Faz request para ler report
  * @param entity
+ * @param search
  * @param filter
  * @param aggroup
  * @param soma
