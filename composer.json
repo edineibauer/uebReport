@@ -1,5 +1,21 @@
 {
+    "name": "ueb/report",
+    "description": "Relatórios e Gráficos sobre dados do sistema",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Edinei J. Bauer",
+            "email": "edineibauer@gmail.com"
+        }
+    ],
     "require": {
+        "php": "^7.1",
         "ueb/dashboard": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Report": "public/src/"
+        }
     }
 }
