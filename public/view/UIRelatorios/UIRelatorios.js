@@ -661,7 +661,7 @@ $(function ($) {
             td.addClass("hide")
         }
 
-        post("report", "saveFieldsGrid", {type: "report", entity: report.id, fields: report.fields});
+        AJAX.post("saveFieldsGrid", {type: "report", entity: report.id, fields: report.fields});
 
     }).off("click", ".report-header-option").on("click", ".report-header-option", function () {
         let $this = $(this);
@@ -802,7 +802,7 @@ $(function ($) {
             return
         }
 
-        post("report", "create/grafico", {
+        AJAX.post("create/grafico", {
             x: x,
             y: y,
             entity: reports[id].entity,
@@ -821,7 +821,7 @@ $(function ($) {
             labelx: labelx,
             rounded: rounded,
             report: report.id
-        }, function (g) {
+        }).then(g => {
             if (g) {
                 updateGraficos().then(() => {
                     readGraficosTable(identificador)
@@ -835,7 +835,7 @@ $(function ($) {
         let identificador = $(this).attr("rel");
         let id = $(this).attr("data-id");
         if(confirm("excluir gráfico?")) {
-            post("report", "delete/grafico", {id: id}, function (g) {
+            AJAX.post("delete/grafico", {id: id}).then(() => {
                 updateGraficos().then(() => {
                     readGraficosTable(identificador)
                 })
