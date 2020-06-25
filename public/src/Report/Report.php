@@ -151,6 +151,8 @@ class Report
                 foreach ($menor as $item)
                     $querySelect .= ", MIN({$this->report['entidade']}.{$item}) as {$item}";
             }
+        } else {
+            $querySelect .= ", 1 as contagem";
         }
 
         $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
