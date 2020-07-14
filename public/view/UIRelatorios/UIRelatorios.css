@@ -8,6 +8,10 @@
     overflow: auto!important;
 }
 
+.tableReportLimit {
+    padding-top: 14px;
+}
+
 #report {
     max-width: 1300px;
     margin-left: auto;
