@@ -206,6 +206,15 @@ class Report
             }
 
             /**
+             * Convert uso de variável do front USER como valor
+             */
+            if(preg_match("/^USER./i", $filterOption['valor'])) {
+                $fields = explode(".", str_replace("USER.", "", $filterOption['valor']));
+                if(count($fields) > 0 && count($fields) < 5)
+                    $filterOption['valor'] = (!empty($fields[4]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]][$fields[3]][$fields[4]] : (!empty($fields[3]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]][$fields[3]] : (!empty($fields[2]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]] : (!empty($fields[1]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]] : $_SESSION['userlogin'][$fields[0]]))));
+            }
+
+            /**
              * Transforma valor do campo no padrão para o campo
              */
             $valor = $filterOption['valor'];
@@ -263,6 +272,18 @@ class Report
                     break;
                 case 'maior igual a hoje - X dias':
                     $query .= " {$column} >= CURDATE() - INTERVAL {$valor} DAY";
+                    break;
+                case 'no dia de hoje':
+                    $query .= " DATE({$column}) = CURDATE()";
+                    break;
+                case 'nesta semana':
+                    $query .= " YEARWEEK({$column}) = YEARWEEK(CURRENT_DATE())";
+                    break;
+                case 'neste mês':
+                    $query .= " MONTH({$column}) = MONTH(CURRENT_DATE()) AND YEAR({$column}) = YEAR(CURRENT_DATE())";
+                    break;
+                case 'neste ano':
+                    $query .= " YEAR({$column}) = YEAR(CURRENT_DATE())";
             }
         }
 
