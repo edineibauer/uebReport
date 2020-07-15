@@ -123,12 +123,12 @@ class Report
         foreach ($this->queryDeclaration as $entity => $logic)
             $queryDeclarationString .= ($queryDeclarationString !== "" ? " " : "") . "{$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
-        $queryOrder = "ORDER BY " . $this->report['entidade'] . "." . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($this->offset) && $this->offset > 0 ? " OFFSET " . $this->offset : "");
+        $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($this->offset) && $this->offset > 0 ? " OFFSET " . $this->offset : "");
 
         $queryGroup = "";
         if(!empty($this->report['agrupamento'])) {
             $queryGroup = "GROUP BY {$this->report['entidade']}." . $this->report['agrupamento'];
-            $querySelect .= ", COUNT({$this->report['entidade']}.id) as contagem";
+            $querySelect .= ", COUNT({$this->report['entidade']}.id) as contagem, COUNT({$this->report['entidade']}.id) as total";
 
             $soma = (!empty($this->report['soma'])) ? json_decode($this->report['soma'], !0) : [];
             $media = (!empty($this->report['media'])) ? json_decode($this->report['media'], !0) : [];
