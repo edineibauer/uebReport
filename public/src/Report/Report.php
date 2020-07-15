@@ -32,7 +32,8 @@ class Report
             $this->report = $report;
         }
 
-        $this->report['voltar_data_de_exibicao'] = (!empty($this->report['voltar_data_de_exibicao']) && is_numeric($this->report['voltar_data_de_exibicao']) ? ($this->report['voltar_data_de_exibicao'] < 0 ? $this->report['voltar_data_de_exibicao'] * -1 : $this->report['voltar_data_de_exibicao']) : 0);
+//        $this->report['voltar_data_de_exibicao'] = (!empty($this->report['voltar_data_de_exibicao']) && is_numeric($this->report['voltar_data_de_exibicao']) ? ($this->report['voltar_data_de_exibicao'] < 0 ? $this->report['voltar_data_de_exibicao'] * -1 : $this->report['voltar_data_de_exibicao']) : 0);
+        $this->report['voltar_data_de_exibicao'] = 0;
 
         if (!empty($limit))
             $this->limit = $limit;
