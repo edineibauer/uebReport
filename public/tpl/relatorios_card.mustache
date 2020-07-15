@@ -2,7 +2,7 @@
     <div class="card radius no-select left relatorios_card" rel="{{id}}"
          style="background: {{cor_de_fundo}}; color: {{cor_do_texto}};">
         <div class='col radius padding-left relative rcard'>
-            <span class='col s-font-small'>{{titulo}}</span>
+            <span class='col s-font-small rtitle'>{{titulo}}</span>
             <span class='right overflow-hidden font-xxlarge s-font-large padding-24 align-right padding-right relatorios_card_value {{classes}}'>{{data}}</span>
             <span class="left ricon">
                 <i class="material-icons">{{icon}}</i>
@@ -12,6 +12,9 @@
 {{/cards}}
 
 <style>
+    .rtitle {
+        height: 20px;
+    }
     .relatorios_card {
         overflow: hidden!important;
         width: 273px!important;
