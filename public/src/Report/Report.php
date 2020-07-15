@@ -32,6 +32,8 @@ class Report
             $this->report = $report;
         }
 
+        $this->report['voltar_data_de_exibicao'] = (!empty($this->report['voltar_data_de_exibicao']) && is_numeric($this->report['voltar_data_de_exibicao']) ? ($this->report['voltar_data_de_exibicao'] < 0 ? $this->report['voltar_data_de_exibicao'] * -1 : $this->report['voltar_data_de_exibicao']) : 0);
+
         if (!empty($limit))
             $this->limit = $limit;
 
@@ -262,28 +264,36 @@ class Report
                     $query .= " {$column} <= {$valorTipado}";
                     break;
                 case 'menor que hoje - X dias':
-                    $query .= " {$column} < CURDATE() - INTERVAL {$valor} DAY";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} DAY)" : "CURDATE()";
+                    $query .= " {$column} < {$actualDate} - INTERVAL {$valor} DAY";
                     break;
                 case 'menor igual a hoje - X dias':
-                    $query .= " {$column} <= CURDATE() - INTERVAL {$valor} DAY";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} DAY)" : "CURDATE()";
+                    $query .= " {$column} <= {$actualDate} - INTERVAL {$valor} DAY";
                     break;
                 case 'maior que hoje - X dias':
-                    $query .= " {$column} > CURDATE() - INTERVAL {$valor} DAY";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} DAY)" : "CURDATE()";
+                    $query .= " {$column} > {$actualDate} - INTERVAL {$valor} DAY";
                     break;
                 case 'maior igual a hoje - X dias':
-                    $query .= " {$column} >= CURDATE() - INTERVAL {$valor} DAY";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} DAY)" : "CURDATE()";
+                    $query .= " {$column} >= {$actualDate} - INTERVAL {$valor} DAY";
                     break;
                 case 'no dia de hoje':
-                    $query .= " DATE({$column}) = CURDATE()";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} DAY)" : "CURDATE()";
+                    $query .= " DATE({$column}) = {$actualDate}";
                     break;
                 case 'nesta semana':
-                    $query .= " YEARWEEK({$column}) = YEARWEEK(CURRENT_DATE())";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} WEEK)" : "CURRENT_DATE()";
+                    $query .= " YEARWEEK({$column}) = YEARWEEK({$actualDate})";
                     break;
                 case 'neste mês':
-                    $query .= " MONTH({$column}) = MONTH(CURRENT_DATE()) AND YEAR({$column}) = YEAR(CURRENT_DATE())";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} MONTH)" : "CURRENT_DATE()";
+                    $query .= " MONTH({$column}) = MONTH({$actualDate}) AND YEAR({$column}) = YEAR({$actualDate})";
                     break;
                 case 'neste ano':
-                    $query .= " YEAR({$column}) = YEAR(CURRENT_DATE())";
+                    $actualDate = $this->report['voltar_data_de_exibicao'] > 0 ? "DATE_SUB(CURDATE(), INTERVAL -{$this->report['voltar_data_de_exibicao']} YEAR)" : "CURRENT_DATE()";
+                    $query .= " YEAR({$column}) = YEAR({$actualDate})";
             }
         }
 
