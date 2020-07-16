@@ -110,7 +110,7 @@ function reportTr(identificador, entity, data, fields) {
 
     let wait = [];
     $.each(fields, function (i, e) {
-        if (typeof data[e.column] !== "undefined" && typeof dicionarios[entity][e.column] !== "undefined") {
+        if (typeof data[e.column] !== "undefined") {
             let tr = {
                 id: data.id,
                 column: e.column,
