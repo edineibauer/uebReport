@@ -198,79 +198,79 @@ class Report
             $this->total = $sql->getRowCount();
 
             foreach ($sql->getResult() as $i => $register) {
-                if($i >= $this->limit)
+                if($i > ($this->offset + $this->limit - 1))
                     break;
 
-                if(empty($this->offset) || $i >= $this->offset) {
+                if(!empty($this->offset) && $i < $this->offset)
+                    continue;
+
+                /**
+                 * Work on a variable with the data of relationData
+                 */
+                $relationData = [];
+
+                /**
+                 * Decode all json on base register
+                 */
+                foreach ($dicionario as $meta) {
+                    if ($meta['type'] === "json" && !empty($register[$meta['column']]))
+                        $register[$meta['column']] = json_decode($register[$meta['column']], !0);
+                }
+
+                /**
+                 * If have relation data together in the base register
+                 */
+                if (!empty($relations)) {
 
                     /**
-                     * Work on a variable with the data of relationData
+                     * Create the field relationData, moving the relation fields to this
                      */
-                    $relationData = [];
-
-                    /**
-                     * Decode all json on base register
-                     */
-                    foreach ($dicionario as $meta) {
-                        if ($meta['type'] === "json" && !empty($register[$meta['column']]))
-                            $register[$meta['column']] = json_decode($register[$meta['column']], !0);
-                    }
-
-                    /**
-                     * If have relation data together in the base register
-                     */
-                    if (!empty($relations)) {
-
-                        /**
-                         * Create the field relationData, moving the relation fields to this
-                         */
-                        foreach ($register as $column => $value) {
-                            foreach ($relations as $relation => $RelationColumn) {
-                                if (strpos($column, $relation . '___') !== false) {
-
-                                    /**
-                                     * Add item to a relation register
-                                     */
-                                    $columnRelationName = str_replace($relation . "___", "", $column);
-                                    $relationData[$RelationColumn][$columnRelationName] = $value;
-
-                                    /**
-                                     * Remove item from base register
-                                     */
-                                    unset($register[$column]);
-                                }
-                            }
-                        }
-
-                        /**
-                         * After separate the base data from the relation data
-                         * check if the relation data have a ID an decode json
-                         */
+                    foreach ($register as $column => $value) {
                         foreach ($relations as $relation => $RelationColumn) {
-
-                            /**
-                             * Check if the struct of relation data received have a ID
-                             * if not, so delete
-                             */
-                            if (empty($relationData[$RelationColumn]['id'])) {
-                                unset($relationData[$RelationColumn]);
-
-                            } else {
+                            if (strpos($column, $relation . '___') !== false) {
 
                                 /**
-                                 * Decode all json on base relation register
+                                 * Add item to a relation register
                                  */
-                                foreach (Metadados::getDicionario($relation) as $meta) {
-                                    if ($meta['type'] === "json" && !empty($relationData[$RelationColumn][$meta['column']]))
-                                        $relationData[$RelationColumn][$meta['column']] = json_decode($relationData[$RelationColumn][$meta['column']], !0);
-                                }
+                                $columnRelationName = str_replace($relation . "___", "", $column);
+                                $relationData[$RelationColumn][$columnRelationName] = $value;
+
+                                /**
+                                 * Remove item from base register
+                                 */
+                                unset($register[$column]);
                             }
                         }
                     }
 
-                    $register["relationData"] = $relationData;
-                    $this->result[] = $register;
+                    /**
+                     * After separate the base data from the relation data
+                     * check if the relation data have a ID an decode json
+                     */
+                    foreach ($relations as $relation => $RelationColumn) {
+
+                        /**
+                         * Check if the struct of relation data received have a ID
+                         * if not, so delete
+                         */
+                        if (empty($relationData[$RelationColumn]['id'])) {
+                            unset($relationData[$RelationColumn]);
+
+                        } else {
+
+                            /**
+                             * Decode all json on base relation register
+                             */
+                            foreach (Metadados::getDicionario($relation) as $meta) {
+                                if ($meta['type'] === "json" && !empty($relationData[$RelationColumn][$meta['column']]))
+                                    $relationData[$RelationColumn][$meta['column']] = json_decode($relationData[$RelationColumn][$meta['column']], !0);
+                            }
+                        }
+                    }
                 }
+
+                $register["relationData"] = $relationData;
+                $this->result[] = $register;
             }
         }
     }
