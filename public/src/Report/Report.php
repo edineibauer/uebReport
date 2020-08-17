@@ -87,12 +87,42 @@ class Report
 
     private function start()
     {
-        $querySelect = "SELECT {$this->report['entidade']}.*";
-        $this->queryDeclaration[$this->report['entidade']] = ["tipo" => "FROM", "on" => ""];
+        $info = Metadados::getInfo($this->report['entidade']);
+        $dicionario = Metadados::getDicionario($this->report['entidade']);
+        $querySelect = "";
+        $queryDeclarationString = "FROM " . PRE . $this->report['entidade'] . " as " . $this->report['entidade'];
+        $relations = [];
+
+        /**
+         * Select the own entity fields
+         */
+        if (!empty($info['columns_readable'])) {
+            foreach ($info['columns_readable'] as $column)
+                $querySelect .= ($querySelect === "" ? "" : ", ") . "{$this->report['entidade']}.{$column}";
+        }
+
+        /**
+         * Include the data from each relation
+         */
+        if (!empty($info['relation'])) {
+            foreach ($info['relation'] as $relationItem) {
+                $relationEntity = $dicionario[$relationItem]['relation'];
+                $relations[$relationEntity] = $dicionario[$relationItem]['column'];
+
+                $infoRelation = Metadados::getInfo($relationEntity);
+                if (!empty($infoRelation['columns_readable'])) {
+                    foreach ($infoRelation['columns_readable'] as $column)
+                        $querySelect .= ", data_" . $dicionario[$relationItem]['relation'] . ".{$column} as {$dicionario[$relationItem]['relation']}___{$column}";
+                }
+
+                $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['relation'] . " ON data_" . $dicionario[$relationItem]['relation'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
+            }
+        }
+
         $queryLogic = "WHERE";
 
         if(!empty($this->report['search'])) {
-            foreach (Metadados::getDicionario($this->report['entidade']) as $meta) {
+            foreach ($dicionario as $meta) {
                 if(!in_array($meta['key'], ["information", "identifier"]))
                     $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . $meta['column'] . " LIKE '%{$this->report['search']}%'";
             }
@@ -122,11 +152,10 @@ class Report
             }
         }
 
-        $queryDeclarationString = "";
         foreach ($this->queryDeclaration as $entity => $logic)
-            $queryDeclarationString .= ($queryDeclarationString !== "" ? " " : "") . "{$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
+            $queryDeclarationString .= " {$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
-        $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC") . " LIMIT {$this->limit}" . (!empty($this->offset) && $this->offset > 0 ? " OFFSET " . $this->offset : "");
+        $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC");
 
         $queryGroup = "";
         if(!empty($this->report['agrupamento'])) {
@@ -158,7 +187,7 @@ class Report
             $querySelect .= ", 1 as contagem";
         }
 
-        $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
+        $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
 
         /**
          * Executa a leitura no banco de dados
@@ -166,12 +195,83 @@ class Report
         $sql = new SqlCommand();
         $sql->exeCommand($query);
         if (!$sql->getErro() && $sql->getResult()) {
-            $this->result = $sql->getResult();
+            $this->total = $sql->getRowCount();
 
-            $query = $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup;
-            $sql->exeCommand($query);
-            if (!$sql->getErro() && $sql->getResult())
-                $this->total = $sql->getRowCount();
+            foreach ($sql->getResult() as $i => $register) {
+                if($i >= $this->limit)
+                    break;
+
+                if(empty($this->offset) || $i >= $this->offset) {
+
+                    /**
+                     * Work on a variable with the data of relationData
+                     */
+                    $relationData = [];
+
+                    /**
+                     * Decode all json on base register
+                     */
+                    foreach ($dicionario as $meta) {
+                        if ($meta['type'] === "json" && !empty($register[$meta['column']]))
+                            $register[$meta['column']] = json_decode($register[$meta['column']], !0);
+                    }
+
+                    /**
+                     * If have relation data together in the base register
+                     */
+                    if (!empty($relations)) {
+
+                        /**
+                         * Create the field relationData, moving the relation fields to this
+                         */
+                        foreach ($register as $column => $value) {
+                            foreach ($relations as $relation => $RelationColumn) {
+                                if (strpos($column, $relation . '___') !== false) {
+
+                                    /**
+                                     * Add item to a relation register
+                                     */
+                                    $columnRelationName = str_replace($relation . "___", "", $column);
+                                    $relationData[$RelationColumn][$columnRelationName] = $value;
+
+                                    /**
+                                     * Remove item from base register
+                                     */
+                                    unset($register[$column]);
+                                }
+                            }
+                        }
+
+                        /**
+                         * After separate the base data from the relation data
+                         * check if the relation data have a ID an decode json
+                         */
+                        foreach ($relations as $relation => $RelationColumn) {
+
+                            /**
+                             * Check if the struct of relation data received have a ID
+                             * if not, so delete
+                             */
+                            if (empty($relationData[$RelationColumn]['id'])) {
+                                unset($relationData[$RelationColumn]);
+
+                            } else {
+
+                                /**
+                                 * Decode all json on base relation register
+                                 */
+                                foreach (Metadados::getDicionario($relation) as $meta) {
+                                    if ($meta['type'] === "json" && !empty($relationData[$RelationColumn][$meta['column']]))
+                                        $relationData[$RelationColumn][$meta['column']] = json_decode($relationData[$RelationColumn][$meta['column']], !0);
+                                }
+                            }
+                        }
+                    }
+
+                    $register["relationData"] = $relationData;
+                    $this->result[] = $register;
+                }
+            }
         }
     }
 
