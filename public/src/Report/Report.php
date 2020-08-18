@@ -102,6 +102,32 @@ class Report
         }
 
         /**
+         * System id relation
+         */
+        if (!empty($info['system'])) {
+            $infSystem = Metadados::getInfo($info['system']);
+            if (!empty($infSystem['columns_readable'])) {
+                foreach ($infSystem['columns_readable'] as $column)
+                    $querySelect .= ", system_" . $info['system'] . ".{$column} as {$info['system']}___{$column}";
+            }
+
+            $queryDeclarationString .= " LEFT JOIN " . PRE . $info['system'] . " as system_" . $info['system'] . " ON system_" . $info['system'] . ".id = {$this->report['entidade']}.system_id";
+        }
+
+        /**
+         * Autorpub and Ownerpub id relation
+         */
+        if (!empty($info['autor'])) {
+            $infAutor = Metadados::getInfo("usuarios");
+            if (!empty($infAutor['columns_readable'])) {
+                foreach ($infAutor['columns_readable'] as $column)
+                    $querySelect .= ", autor_user.{$column} as autor_user___{$column}";
+            }
+
+            $queryDeclarationString .= " LEFT JOIN " . PRE . "usuarios as autor_user ON autor_user.id = {$this->report['entidade']}." . ($info['autor'] == 1 ? "autorpub" : "ownerpub");
+        }
+
+        /**
          * Include the data from each relation
          */
         if (!empty($info['relation'])) {
@@ -218,35 +244,96 @@ class Report
                 }
 
                 /**
-                 * If have relation data together in the base register
+                 * Foreach register, check if have relationData to split
                  */
-                if (!empty($relations)) {
+                foreach ($register as $column => $value) {
 
                     /**
-                     * Create the field relationData, moving the relation fields to this
+                     * Check System ID relation
+                     * Add item to a relation register system_id
+                     * Remove item from base register
                      */
-                    foreach ($register as $column => $value) {
+                    if (!empty($info['system']) && strpos($column, $info['system'] . '___') !== false) {
+                        $relationData["system_id"][str_replace($info['system'] . "___", "", $column)] = $value;
+                        unset($register[$column]);
+                    }
+
+                    /**
+                     * Autorpub and Ownerpub id relation
+                     * Add item to a relation register
+                     * Remove item from base register
+                     */
+                    if (!empty($info['autor']) && strpos($column, 'autor_user___') !== false) {
+                        $relationData["usuarios"][str_replace("autor_user___", "", $column)] = $value;
+                        unset($register[$column]);
+                    }
+
+                    /**
+                     * If have relation data together in the base register
+                     */
+                    if (!empty($relations)) {
                         foreach ($relations as $relation => $RelationColumn) {
                             if (strpos($column, $relation . '___') !== false) {
 
                                 /**
                                  * Add item to a relation register
-                                 */
-                                $columnRelationName = str_replace($relation . "___", "", $column);
-                                $relationData[$RelationColumn][$columnRelationName] = $value;
-
-                                /**
                                  * Remove item from base register
                                  */
+                                $relationData[$RelationColumn][str_replace($relation . "___", "", $column)] = $value;
                                 unset($register[$column]);
                             }
                         }
                     }
+                }
 
+                if(!empty($info['system'])) {
                     /**
-                     * After separate the base data from the relation data
-                     * check if the relation data have a ID an decode json
+                     * Check if the struct of relation data received have a ID
+                     * if not, so delete
                      */
+                    if (empty($relationData["system_id"]['id'])) {
+                        unset($relationData["system_id"]);
+
+                    } else {
+
+                        /**
+                         * Decode all json on base relation register
+                         */
+                        foreach (Metadados::getDicionario($info['system']) as $meta) {
+                            if ($meta['type'] === "json" && !empty($relationData["system_id"][$meta['column']]))
+                                $relationData["system_id"][$meta['column']] = json_decode($relationData["system_id"][$meta['column']], !0);
+                        }
+                    }
+                }
+
+                if(!empty($info['autor']) && !empty($relationData["usuarios"])) {
+                    /**
+                     * Check if the struct of relation data received have a ID
+                     * if not, so delete
+                     */
+                    if (empty($relationData["usuarios"]['id'])) {
+                        unset($relationData["usuarios"]);
+
+                    } else {
+
+                        /**
+                         * Decode all json on base relation register
+                         */
+                        foreach (Metadados::getDicionario("usuarios") as $meta) {
+                            if ($meta['type'] === "json" && !empty($relationData["usuarios"][$meta['column']]))
+                                $relationData["usuarios"][$meta['column']] = json_decode($relationData["usuarios"][$meta['column']], !0);
+                        }
+
+                        $relationData[$info['autor'] == 1 ? "autorpub" : "ownerpub"] = $relationData["usuarios"];
+                        unset($relationData["usuarios"]);
+                    }
+                }
+
+                /**
+                 * After separate the base data from the relation data
+                 * check if the relation data have a ID an decode json
+                 */
+                if (!empty($relations)) {
                     foreach ($relations as $relation => $RelationColumn) {
 
                         /**
