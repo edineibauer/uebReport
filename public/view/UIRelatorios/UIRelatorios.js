@@ -39,7 +39,7 @@ function gridTdFilterValue(value, meta) {
             return getRelevantTitle(meta.relation, value, 1, !1)
         } else if (['list', 'selecao', 'checkbox_rel', 'checkbox_mult'].indexOf(meta.format) > -1) {
             return db.exeRead(meta.relation, parseInt(value)).then(data => {
-                return getRelevantTitle(meta.relation, data, 1, !1)
+                return getRelevantTitle(meta.relation, !isEmpty(data) ? data : null, 1, !1)
             })
         } else {
             value = applyFilterToTd(value, meta)
@@ -443,7 +443,7 @@ $(function ($) {
     $.fn.reportTable = function (report) {
         let $this = this;
         db.exeRead("relatorios", parseInt(report)).then(report => {
-            reportTable(report, $this);
+            reportTable(!isEmpty(report) ? report[0] : null, $this);
         });
         return $this;
     };
