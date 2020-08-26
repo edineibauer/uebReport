@@ -138,10 +138,10 @@ class Report
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
                     foreach ($infoRelation['columns_readable'] as $column)
-                        $querySelect .= ", data_" . $dicionario[$relationItem]['relation'] . ".{$column} as {$dicionario[$relationItem]['relation']}___{$column}";
+                        $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['relation']}___{$column}";
                 }
 
-                $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['relation'] . " ON data_" . $dicionario[$relationItem]['relation'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
+                $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['column'] . " ON data_" . $dicionario[$relationItem]['column'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
             }
         }
 
