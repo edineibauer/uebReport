@@ -363,6 +363,44 @@ class Report
                 $register["relationData"] = $relationData;
                 $this->result[] = $register;
             }
+
+            /**
+             * if is user database, include the setor data relation
+             */
+            if($entity === "usuarios") {
+
+                $infos = [];
+                $dicionarios = [];
+                $read = new \Conn\Read();
+
+                foreach ($this->result as $i => $item) {
+                    if(!empty($item['setor'])) {
+
+                        if(!isset($infos[$item['setor']]))
+                            $infos[$item['setor']] = Metadados::getInfo($item['setor']);
+
+                        if(!isset($dicionarios[$item['setor']]))
+                            $dicionarios[$item['setor']] = Metadados::getDicionario($item['setor']);
+
+                        if (!empty($infos[$item['setor']]['columns_readable']))
+                            $read->setSelect($infos[$item['setor']]['columns_readable']);
+
+                        $read->exeRead($item['setor'], "WHERE usuarios_id = :id", "id={$item['id']}", !0);
+                        if($read->getResult()) {
+                            $this->result[$i]['relationData'][$item['setor']] = [];
+
+                            /**
+                             * Decode all json on base relation register
+                             */
+                            foreach ($dicionarios[$item['setor']] as $meta) {
+                                $m = new \Entity\Meta($meta);
+                                $m->setValue($read->getResult()[0][$meta['column']]);
+                                $this->result[$i]['relationData'][$item['setor']][$meta['column']] = $m->getValue();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
