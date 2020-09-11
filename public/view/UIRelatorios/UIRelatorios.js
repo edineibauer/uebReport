@@ -343,7 +343,6 @@ function reportTable(dataReport, $element) {
 
         show: function () {
             return this.getShow().then(reportData => {
-                pageTransition(reportData, "", "forward", this.$element.attr("id"));
                 this.$element.html(reportData);
                 return this.readData();
             })

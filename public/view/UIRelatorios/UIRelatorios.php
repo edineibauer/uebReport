@@ -8,7 +8,9 @@
 </nav>
 
 <div class="main report-main animate-left">
-    <div id="report" class="container padding-xlarge s-padding-medium row">
-        Relatórios
+    <div id="report-parent" class="container padding-xlarge s-padding-medium row">
+        <div id="report" class="container">
+            Relatórios
+        </div>
     </div>
 </div>
