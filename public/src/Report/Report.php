@@ -379,13 +379,13 @@ class Report
              * if is user database, include the setor data relation
              * Or if have Autorpub or Ownerpub, so include the setor data relation
              */
-            if ($entity === "usuarios" || !empty($info['autor'])) {
+            if ($this->report['entidade'] === "usuarios" || !empty($info['autor'])) {
                 foreach ($this->result as $i => $item) {
-                    $entitySetor = ($entity === "usuarios" ? $item['setor'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['setor'] : $item['relationData']["ownerpub"]['setor']));
+                    $entitySetor = ($this->report['entidade'] === "usuarios" ? $item['setor'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['setor'] : $item['relationData']["ownerpub"]['setor']));
                     if (!empty($entitySetor)) {
-                        $idUsuario = ($entity === "usuarios" ? $item['id'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['id'] : $item['relationData']["ownerpub"]['id']));
+                        $idUsuario = ($this->report['entidade'] === "usuarios" ? $item['id'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['id'] : $item['relationData']["ownerpub"]['id']));
 
-                        if ($entity === "usuarios")
+                        if ($this->report['entidade'] === "usuarios")
                             $this->result[$i]['relationData'][$entitySetor] = Entity::getUserSetorData($entitySetor, $idUsuario);
                         else
                             $this->result[$i]['relationData'][($info['autor'] == 1 ? "autorpub" : "ownerpub")]["relationData"][$entitySetor] = Entity::getUserSetorData($entitySetor, $idUsuario);
