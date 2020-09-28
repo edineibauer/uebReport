@@ -23,3 +23,21 @@ $offset = filter_input(INPUT_POST, 'offset', FILTER_VALIDATE_INT);
 
 $report = new \Report\Report($filter, $limit, $offset);
 $data['data'] = ['data' => $report->getResult(), 'total' => $report->getTotal()];
+
+/**
+ * Create historic user
+ */
+if(!file_exists(PATH_HOME . "_cdn/userSSE/" . $_SESSION['userlogin']['id'] . "/db_" . $filter['entidade'] . ".json")) {
+    $json = new \Entity\Json();
+    $hist = $json->get("historic");
+    if (empty($hist[$filter['entidade']])) {
+        $hist[$filter['entidade']] = strtotime('now') . "-" . rand(1000000, 9999999);
+        $json->save("historic", $hist);
+    }
+
+    \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "_cdn/userSSE");
+    \Helpers\Helper::createFolderIfNoExist(PATH_HOME . "_cdn/userSSE/" . $_SESSION['userlogin']['id']);
+    $f = fopen(PATH_HOME . "_cdn/userSSE/" . $_SESSION['userlogin']['id'] . "/db_" . $filter['entidade'] . ".json", "w");
+    fwrite($f, $hist[$filter['entidade']]);
+    fclose($f);
+}
