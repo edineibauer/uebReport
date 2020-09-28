@@ -205,7 +205,7 @@ class Report
             $querySelect .= ", 1 as contagem";
         }
 
-        $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . LIMITOFFLINE . " OFFSET " . $this->offset;
+        $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . $this->limit . " OFFSET " . $this->offset;
 
         /**
          * Executa a leitura no banco de dados
