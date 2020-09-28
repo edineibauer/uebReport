@@ -15,7 +15,6 @@ class Report
     private $queryDeclaration = [];
     private $limit = 1000000;
     private $offset = 0;
-    private $total = 0;
 
     /**
      * Report constructor.
@@ -76,14 +75,6 @@ class Report
     public function getReport(): array
     {
         return $this->report;
-    }
-
-    /**
-     * @return int
-     */
-    public function getTotal(): int
-    {
-        return $this->total;
     }
 
     private function start()
@@ -214,7 +205,7 @@ class Report
             $querySelect .= ", 1 as contagem";
         }
 
-        $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder;
+        $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . LIMITOFFLINE . " OFFSET " . $this->offset;
 
         /**
          * Executa a leitura no banco de dados
@@ -222,15 +213,7 @@ class Report
         $sql = new SqlCommand();
         $sql->exeCommand($query);
         if (!$sql->getErro() && $sql->getResult()) {
-            $this->total = $sql->getRowCount();
-
             foreach ($sql->getResult() as $i => $register) {
-                if($i > ($this->offset + $this->limit - 1))
-                    break;
-
-                if(!empty($this->offset) && $i < $this->offset)
-                    continue;
-
                 /**
                  * Work on a variable with the data of relationData
                  */

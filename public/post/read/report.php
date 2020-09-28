@@ -22,7 +22,7 @@ $limit = empty($limit) ? LIMITOFFLINE : $limit;
 $offset = filter_input(INPUT_POST, 'offset', FILTER_VALIDATE_INT);
 
 $report = new \Report\Report($filter, $limit, $offset);
-$data['data'] = ['data' => $report->getResult(), 'total' => $report->getTotal()];
+$data['data'] = $report->getResult();
 
 /**
  * Create historic user
