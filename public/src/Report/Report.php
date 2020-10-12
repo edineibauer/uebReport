@@ -387,6 +387,9 @@ class Report
         $query = "";
         foreach ($filter as $i => $filterOption) {
 
+            if($filterOption['coluna'] === "ownerpub" OR $filterOption['coluna'] === "system_id")
+                continue;
+
             if ($i > 0)
                 $query .= " " . strtoupper($filterOption['logica']);
 
