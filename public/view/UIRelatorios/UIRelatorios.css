@@ -12,12 +12,6 @@
     padding-top: 14px;
 }
 
-#report-parent {
-    max-width: 1300px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 #report {
     max-width: 1300px;
     margin-left: auto;
@@ -62,6 +56,17 @@
 }
 ::-webkit-scrollbar-button {
     background: #aaa;
+}
+
+#dashboard {
+    min-height: calc(100vh - 120px);
+    max-width: 1400px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0!important;
+    display: block;
+    position: relative;
+    float: initial;
 }
 
 .dash-version {

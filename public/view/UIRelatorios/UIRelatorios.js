@@ -227,7 +227,7 @@ function reportTable(dataReport, $element) {
             clearInterval(this.loadingTime)
         },
 
-        readData: function () {
+        readData: async function () {
             clearHeaderScrollPosition();
             let $this = this;
             $this.$content = $this.$element.find("tbody");
@@ -238,64 +238,62 @@ function reportTable(dataReport, $element) {
 
             let offset = ($this.page * $this.limit) - $this.limit;
             let result = reportRead($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
-            return Promise.all([result, getTemplates()]).then(r => {
-                result = r[0];
-                let templates = r[1];
+            result = {data: result, length: (await dbLocal.exeRead("__totalRegisters", 1))[$this.entity]};
+            let templates = await getTemplates();
 
-                $this.setTotalRegisters(result.length);
-                $this.$content.html("");
+            $this.setTotalRegisters(result.length);
+            $this.$content.html("");
 
-                dbLocal.exeRead('__historic', 1).then(hist => {
-                    $this.historic = hist[$this.entity]
-                });
+            dbLocal.exeRead('__historic', 1).then(hist => {
+                $this.historic = hist[$this.entity]
+            });
 
-                let pp = [];
-                let registerPosition = 0;
-                let registersWaitingPosition = [];
-                for (let k in result.data) {
-                    if (typeof result.data[k] === "object" && !isEmpty(result.data[k])) {
-                        pp.push(reportTr($this.identificador, $this.entity, result.data[k], $this.fields).then(tr => {
-                            if (parseInt(k) === registerPosition) {
-                                $this.$content.append(Mustache.render(templates.report_table_content, tr));
-                                registerPosition++;
-                                if (registersWaitingPosition.length) {
-                                    let r = $this.putWaitingRegisters(registerPosition, registersWaitingPosition, $this.$content);
-                                    registerPosition = r[0];
-                                    registersWaitingPosition = r[1]
-                                }
-                            } else {
-                                registersWaitingPosition.push({
-                                    position: parseInt(k),
-                                    content: Mustache.render(templates.report_table_content, tr)
-                                })
+            let pp = [];
+            let registerPosition = 0;
+            let registersWaitingPosition = [];
+            for (let k in result.data) {
+                if (typeof result.data[k] === "object" && !isEmpty(result.data[k])) {
+                    pp.push(reportTr($this.identificador, $this.entity, result.data[k], $this.fields).then(tr => {
+                        if (parseInt(k) === registerPosition) {
+                            $this.$content.append(Mustache.render(templates.report_table_content, tr));
+                            registerPosition++;
+                            if (registersWaitingPosition.length) {
+                                let r = $this.putWaitingRegisters(registerPosition, registersWaitingPosition, $this.$content);
+                                registerPosition = r[0];
+                                registersWaitingPosition = r[1]
                             }
-                        }))
-                    }
+                        } else {
+                            registersWaitingPosition.push({
+                                position: parseInt(k),
+                                content: Mustache.render(templates.report_table_content, tr)
+                            })
+                        }
+                    }))
                 }
+            }
 
-                return Promise.all(pp).then(d => {
-                    if (isEmpty(d))
-                        $this.setNoRegister();
+            return Promise.all(pp).then(d => {
+                if (isEmpty(d))
+                    $this.setNoRegister();
 
-                    $this.removeLoading();
-                    loadMaskTable(this.$content);
+                $this.removeLoading();
+                loadMaskTable(this.$content);
 
-                    this.$element.find(".pagination").remove();
-                    let total = parseInt(this.$element.find(".total").html().replace(".", "").replace(".", "").replace(".", ""));
-                    if (total > this.limit) {
-                        let $this = this;
-                        $this.$element.find(".grid-form-body").materializePagination({
-                            currentPage: $this.page,
-                            lastPage: Math.ceil(total / $this.limit),
-                            onClickCallback: function (requestedPage) {
-                                if (requestedPage !== $this.page) {
-                                    $this.page = requestedPage;
-                                    $this.readData()
-                                }
+                this.$element.find(".pagination").remove();
+                let total = parseInt(this.$element.find(".total").html().replace(".", "").replace(".", "").replace(".", ""));
+                if (total > this.limit) {
+                    let $this = this;
+                    $this.$element.find(".grid-form-body").materializePagination({
+                        currentPage: $this.page,
+                        lastPage: Math.ceil(total / $this.limit),
+                        onClickCallback: function (requestedPage) {
+                            if (requestedPage !== $this.page) {
+                                $this.page = requestedPage;
+                                $this.readData()
                             }
-                        })
-                    }
-                })
+                        }
+                    })
+                }
             })
         },
 
@@ -311,7 +309,7 @@ function reportTable(dataReport, $element) {
                         column: "contagem",
                         first: true,
                         format: "number",
-                        nome: "contagem",
+                        nome: "total de registros",
                         relation: null,
                         show: true,
                         style: "",
