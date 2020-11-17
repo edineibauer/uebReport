@@ -237,7 +237,7 @@ function reportTable(dataReport, $element) {
             this.setLoading();
 
             let offset = ($this.page * $this.limit) - $this.limit;
-            let result = reportRead($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
+            let result = await reportRead($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
             result = {data: result, length: (await dbLocal.exeRead("__totalRegisters", 1))[$this.entity]};
             let templates = await getTemplates();
 
