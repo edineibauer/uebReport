@@ -125,7 +125,7 @@ class Report
         if (!empty($info['relation'])) {
             foreach ($info['relation'] as $relationItem) {
                 $relationEntity = $dicionario[$relationItem]['relation'];
-                $relations[$relationEntity] = $dicionario[$relationItem]['column'];
+                $relations[$dicionario[$relationItem]['column']] = $relationEntity;
 
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
@@ -257,7 +257,7 @@ class Report
                      * If have relation data together in the base register
                      */
                     if (!empty($relations)) {
-                        foreach ($relations as $relation => $RelationColumn) {
+                        foreach ($relations as $RelationColumn => $relation) {
                             if (strpos($column, $relation . '___') !== false) {
 
                                 /**
@@ -321,7 +321,7 @@ class Report
                  * check if the relation data have a ID an decode json
                  */
                 if (!empty($relations)) {
-                    foreach ($relations as $relation => $RelationColumn) {
+                    foreach ($relations as $RelationColumn => $relation) {
 
                         /**
                          * Check if the struct of relation data received have a ID
