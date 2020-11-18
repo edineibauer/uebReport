@@ -232,7 +232,7 @@ function reportTable(dataReport, $element) {
 
             let offset = ($this.page * $this.limit) - $this.limit;
             let result = await reportRead($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
-            result = {data: result, length: (await dbLocal.exeRead("__totalRegisters", 1))[$this.entity]};
+            result = {data: result, length: length: result.length === $this.limit ? result.length + 1 : result.length};
             let templates = await getTemplates();
 
             $this.setTotalRegisters(result.length);
