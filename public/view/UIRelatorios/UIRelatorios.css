@@ -39,6 +39,10 @@
     width: 5px;
 }
 
+.table-all td:first-child {
+    padding-left: 25px!important;
+}
+
 ::-webkit-scrollbar {
     width: 10px;
 }
