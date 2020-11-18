@@ -22,9 +22,10 @@ function getTrClass(meta, value) {
     return ""
 }
 
-function gridTdFilterValue(value, meta) {
+async function gridTdFilterValue(value, meta, relationData) {
     if (typeof meta !== "undefined") {
         value = !isEmpty(value) ? value : "";
+
         if (['select', 'radio'].indexOf(meta.format) > -1) {
             value = meta.allow.options.find(option => option.valor == value).representacao;
         } else if ('checkbox' === meta.format) {
@@ -35,19 +36,18 @@ function gridTdFilterValue(value, meta) {
             value = resposta;
         } else if (meta.group === "boolean") {
             value = "<div class='activeBoolean" + (value == 1 ? " active" : "") + "'></div>";
+        } else if (meta.key === "valor") {
+            value = "R$ " + formatMoney(value, 2, ',', '.');
         } else if (['folder', 'extend'].indexOf(meta.format) > -1) {
-            return getRelevantTitle(meta.relation, value, 1, !1)
+            value = getRelevantTitle(meta.relation, value, 1, !1)
         } else if (['list', 'selecao', 'checkbox_rel', 'checkbox_mult'].indexOf(meta.format) > -1) {
-            return db.exeRead(meta.relation, parseInt(value)).then(data => {
-                return getRelevantTitle(meta.relation, !isEmpty(data) ? data : null, 1, !1)
-            })
+            value = (!isEmpty(relationData) && !isEmpty(relationData[meta.column]) ? (await getTitleFromData(meta.relation, relationData[meta.column])) : "");
         } else {
             value = applyFilterToTd(value, meta)
         }
     }
-    return Promise.all([]).then(() => {
-        return value
-    })
+
+    return value;
 }
 
 function applyFilterToTd(value, meta) {
@@ -99,41 +99,33 @@ function loadMaskTable($table) {
     // maskData($table)
 }
 
-function reportTr(identificador, entity, data, fields) {
-    let gridContent = {
+async function reportTr(identificador, entity, data, fields) {
+    let fieldsWorked = [];
+
+    for(let e of fields) {
+        if (typeof data[e.column] === "undefined")
+            continue;
+
+        fieldsWorked.push({
+            id: data.id,
+            column: e.column,
+            show: e.show,
+            entity: entity,
+            style: getTrStyle(dicionarios[entity][e.column], data[e.column]),
+            class: getTrClass(dicionarios[entity][e.column], data[e.column]),
+            checked: !1,
+            first: e.first,
+            value: (await gridTdFilterValue(data[e.column], dicionarios[entity][e.column], data.relationData))
+        });
+    }
+
+    return {
         id: data.id || 0,
         online: navigator.onLine,
         identificador: identificador,
         entity: entity,
-        fields: []
+        fields: fieldsWorked
     };
-
-    let wait = [];
-    $.each(fields, function (i, e) {
-        if (typeof data[e.column] !== "undefined") {
-            let tr = {
-                id: data.id,
-                column: e.column,
-                show: e.show,
-                entity: gridContent.entity,
-                style: '',
-                class: '',
-                checked: !1,
-                first: e.first
-            };
-            tr.class = getTrClass(dicionarios[entity][e.column], data[e.column]);
-            tr.style = getTrStyle(dicionarios[entity][e.column], data[e.column]);
-            gridContent.fields.push(tr);
-
-            wait.push(gridTdFilterValue(data[e.column], dicionarios[entity][e.column]).then(v => {
-                tr.value = v
-            }))
-        }
-    });
-
-    return Promise.all(wait).then(() => {
-        return gridContent
-    })
 }
 
 function reportTable(dataReport, $element) {
@@ -253,6 +245,7 @@ function reportTable(dataReport, $element) {
             let registersWaitingPosition = [];
             for (let k in result.data) {
                 if (typeof result.data[k] === "object" && !isEmpty(result.data[k])) {
+
                     pp.push(reportTr($this.identificador, $this.entity, result.data[k], $this.fields).then(tr => {
                         if (parseInt(k) === registerPosition) {
                             $this.$content.append(Mustache.render(templates.report_table_content, tr));
