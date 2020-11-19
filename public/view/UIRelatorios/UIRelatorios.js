@@ -308,7 +308,7 @@ function reportTable(dataReport, $element) {
                     this.fields = r[0];
 
                 if(!this.fields.find(f => f.column === "contagem")) {
-                    this.fields.push({
+                    this.fields.unshift({
                         class: "",
                         column: "contagem",
                         first: true,
