@@ -22,6 +22,15 @@ function getTrClass(meta, value) {
     return ""
 }
 
+async function getTitleFromData(entity, data) {
+    for(let typeColumn of (await dbLocal.exeRead("__relevant", 1))) {
+        for(let col in dicionarios[entity]) {
+            if(dicionarios[entity][col].format === typeColumn)
+                return data[col];
+        }
+    }
+}
+
 async function gridTdFilterValue(value, meta, relationData) {
     if (typeof meta !== "undefined") {
         value = !isEmpty(value) ? value : "";
