@@ -231,7 +231,6 @@ function reportTable(dataReport, $element) {
         },
 
         readData: async function () {
-            clearHeaderScrollPosition();
             let $this = this;
             $this.$content = $this.$element.find("tbody");
             $(".table-info-result").remove();
