@@ -1,5 +1,6 @@
 {
   "title": "Relatórios",
+  "icon": "insert_chart",
   "css": ["w3"],
   "js": ["coreGrid", "coreReport"]
 }
