@@ -1,5 +1,5 @@
 {
-  "title": "Relatórios {$sitename}",
+  "title": "Relatórios",
   "css": ["w3"],
   "js": ["coreGrid", "coreReport"]
 }
