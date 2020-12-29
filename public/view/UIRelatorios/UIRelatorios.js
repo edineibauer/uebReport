@@ -449,17 +449,6 @@ $(function ($) {
     };
 
     /**
-     * Menu de relatórios
-     */
-    db.exeRead("relatorios").then(reports => {
-        let $menu = $("#report-menu").html("<ul>");
-        for (let i in reports)
-            $menu.append("<li rel='" + reports[i].id + "' class='report-menu col container padding-8 theme-hover pointer' style='border-bottom-right-radius: 5px;border-top-right-radius: 5px;'>" + reports[i].nome + "</li>");
-
-        $menu.append("</ul>");
-    });
-
-    /**
      * Ação de clique no menu de relatórios, chama o relatório
      */
     $("#report-menu").off("click", ".report-menu").on("click", ".report-menu", function () {

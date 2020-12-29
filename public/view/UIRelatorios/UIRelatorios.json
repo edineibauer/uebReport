@@ -2,5 +2,8 @@
   "title": "Relatórios",
   "icon": "insert_chart",
   "css": ["w3"],
-  "js": ["coreGrid", "coreReport"]
+  "!setor": "0",
+  "js": ["coreGrid", "coreReport"],
+  "header": false,
+  "navbar": false
 }
