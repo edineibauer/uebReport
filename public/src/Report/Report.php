@@ -364,7 +364,7 @@ class Report
              */
             if ($this->report['entidade'] === "usuarios" || !empty($info['autor'])) {
                 foreach ($this->result as $i => $item) {
-                    $entitySetor = ($this->report['entidade'] === "usuarios" ? $item['setor'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['setor'] : $item['relationData']["ownerpub"]['setor']));
+                    $entitySetor = ($this->report['entidade'] === "usuarios" ? $item['setor'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['setor'] ?? "" : $item['relationData']["ownerpub"]['setor'] ?? ""));
                     if (!empty($entitySetor)) {
                         $idUsuario = ($this->report['entidade'] === "usuarios" ? $item['id'] : ($info['autor'] == 1 ? $item['relationData']["autorpub"]['id'] : $item['relationData']["ownerpub"]['id']));
 
