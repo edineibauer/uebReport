@@ -224,8 +224,13 @@ class Report
                  */
                 foreach ($dicionario as $meta) {
                     $m = new \Entity\Meta($meta);
-                    $m->setValue($register[$meta['column']]);
-                    $register[$meta['column']] = $m->getValue();
+                    if($meta['format'] === "password") {
+                        $m->setValue("");
+                        $register[$meta['column']] = "";
+                    } else {
+                        $m->setValue($register[$meta['column']]);
+                        $register[$meta['column']] = $m->getValue();
+                    }
                 }
 
                 /**
@@ -286,8 +291,14 @@ class Report
                          */
                         foreach (Metadados::getDicionario($info['system']) as $meta) {
                             $m = new \Entity\Meta($meta);
-                            $m->setValue($relationData["system_id"][$meta['column']]);
-                            $relationData["system_id"][$meta['column']] = $m->getValue();
+
+                            if($meta['format'] === "password") {
+                                $m->setValue("");
+                                $relationData["system_id"][$meta['column']] = "";
+                            } else {
+                                $m->setValue($relationData["system_id"][$meta['column']]);
+                                $relationData["system_id"][$meta['column']] = $m->getValue();
+                            }
                         }
                     }
                 }
@@ -307,8 +318,14 @@ class Report
                          */
                         foreach (Metadados::getDicionario("usuarios") as $meta) {
                             $m = new \Entity\Meta($meta);
-                            $m->setValue($relationData["usuarios"][$meta['column']]);
-                            $relationData["usuarios"][$meta['column']] = $m->getValue();
+
+                            if($meta['format'] === "password") {
+                                $m->setValue("");
+                                $relationData["usuarios"][$meta['column']] = "";
+                            } else {
+                                $m->setValue($relationData["usuarios"][$meta['column']]);
+                                $relationData["usuarios"][$meta['column']] = $m->getValue();
+                            }
                         }
 
                         $relationData[$info['autor'] == 1 ? "autorpub" : "ownerpub"] = $relationData["usuarios"];
@@ -337,8 +354,14 @@ class Report
                              */
                             foreach (Metadados::getDicionario($relation) as $meta) {
                                 $m = new \Entity\Meta($meta);
-                                $m->setValue($relationData[$RelationColumn][$meta['column']]);
-                                $relationData[$RelationColumn][$meta['column']] = $m->getValue();
+
+                                if($meta['format'] === "password") {
+                                    $m->setValue("");
+                                    $relationData[$RelationColumn][$meta['column']] = "";
+                                } else {
+                                    $m->setValue($relationData[$RelationColumn][$meta['column']]);
+                                    $relationData[$RelationColumn][$meta['column']] = $m->getValue();
+                                }
                             }
 
                             /**
@@ -432,9 +455,15 @@ class Report
             foreach ($dicionario as $item) {
                 if ($item['column'] === $filterOption['coluna']) {
                     $meta = new Meta($item);
-                    $meta->setValue($valor);
                     $tipo = $meta->getType();
-                    $valorTipado = $meta->getValue();
+
+                    if($meta->get('format') === "password") {
+                        $meta->setValue("");
+                        $valorTipado = "";
+                    } else {
+                        $meta->setValue($valor);
+                        $valorTipado = $meta->getValue();
+                    }
                     break;
                 }
             }
