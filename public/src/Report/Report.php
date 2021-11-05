@@ -144,7 +144,7 @@ class Report
         if(!empty($this->report['search'])) {
             foreach ($dicionario as $meta) {
                 if(!in_array($meta['key'], ["information", "identifier"]))
-                    $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . $meta['column'] . " LIKE '%{$this->report['search']}%'";
+                    $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$this->report['entidade']}.{$meta['column']} LIKE '%{$this->report['search']}%'";
             }
             $queryLogic .= ")";
         }
