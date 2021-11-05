@@ -32,7 +32,6 @@ class Report
             $this->report = $report;
         }
 
-//        $this->report['voltar_data_de_exibicao'] = (!empty($this->report['voltar_data_de_exibicao']) && is_numeric($this->report['voltar_data_de_exibicao']) ? ($this->report['voltar_data_de_exibicao'] < 0 ? $this->report['voltar_data_de_exibicao'] * -1 : $this->report['voltar_data_de_exibicao']) : 0);
         $this->report['voltar_data_de_exibicao'] = 0;
 
         if (!empty($limit))
@@ -124,13 +123,16 @@ class Report
          */
         if (!empty($info['relation'])) {
             foreach ($info['relation'] as $relationItem) {
+                if($dicionario[$relationItem]["format"] !== "list")
+                    continue;
+
                 $relationEntity = $dicionario[$relationItem]['relation'];
                 $relations[$dicionario[$relationItem]['column']] = $relationEntity;
 
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
                     foreach ($infoRelation['columns_readable'] as $column)
-                        $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['relation']}___{$column}";
+                        $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
                 }
 
                 $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['column'] . " ON data_" . $dicionario[$relationItem]['column'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
@@ -263,16 +265,27 @@ class Report
                      */
                     if (!empty($relations)) {
                         foreach ($relations as $RelationColumn => $relation) {
-                            if (strpos($column, $relation . '___') !== false) {
+                            if (strpos($column, $RelationColumn . '___') !== false) {
 
                                 /**
                                  * Add item to a relation register
                                  * Remove item from base register
                                  */
-                                $relationData[$RelationColumn][str_replace($relation . "___", "", $column)] = $value;
+                                $relationData[$RelationColumn][str_replace($RelationColumn . "___", "", $column)] = $value;
                                 unset($register[$column]);
                             }
                         }
+                    }
+                }
+
+                if(!empty($info['relation'])) {
+                    $read = new Read();
+                    foreach ($info['relation'] as $re) {
+                        if($dicionario[$re]["format"] !== "list_mult" || empty($register[$dicionario[$re]["column"]]))
+                            continue;
+
+                        $read->exeRead($dicionario[$re]["relation"], "WHERE id IN(" . implode(",", $register[$dicionario[$re]["column"]]) . ")");
+                        $relationData[$dicionario[$re]["column"]] = $read->getResult();
                     }
                 }
 
