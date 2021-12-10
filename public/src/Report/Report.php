@@ -81,7 +81,7 @@ class Report
     {
         $permission = Config::getPermission($_SESSION["userlogin"]["setor"]);
 
-        if(!$permission[$this->report['entidade']]["read"])
+        if($_SESSION["userlogin"]["setor"] !== "admin" && !$permission[$this->report['entidade']]["read"])
             return;
 
         $info = Metadados::getInfo($this->report['entidade']);
@@ -148,7 +148,7 @@ class Report
         $queryLogic = "WHERE";
 
         //restringe leitura a somente dados do system_id de acesso
-        if(!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"])
+        if($_SESSION["userlogin"]["setor"] !== "admin" && !isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"])
             $queryLogic = "WHERE {$this->report['entidade']}.system_id = " . (!empty($_SESSION["userlogin"]["system_id"]) ? $_SESSION["userlogin"]["system_id"] : 99999999999999);
 
 
