@@ -149,7 +149,7 @@ class Report
 
         //restringe leitura a somente dados do system_id de acesso
         if(!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"])
-            $queryLogic = "WHERE {$this->report['entidade']}.system_id = {$_SESSION["userlogin"]["system_id"]}";
+            $queryLogic = "WHERE {$this->report['entidade']}.system_id = " . (!empty($_SESSION["userlogin"]["system_id"]) ? $_SESSION["userlogin"]["system_id"] : 99999999999999);
 
 
         if(!empty($this->report['search'])) {
