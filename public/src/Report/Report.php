@@ -2,6 +2,7 @@
 
 namespace Report;
 
+use Config\Config;
 use Conn\Read;
 use Conn\SqlCommand;
 use Entity\Entity;
@@ -78,6 +79,11 @@ class Report
 
     private function start()
     {
+        $permission = Config::getPermission($_SESSION["userlogin"]["setor"]);
+
+        if(!$permission[$this->report['entidade']]["read"])
+            return;
+
         $info = Metadados::getInfo($this->report['entidade']);
         $dicionario = Metadados::getDicionario($this->report['entidade']);
         $querySelect = "";
@@ -140,6 +146,11 @@ class Report
         }
 
         $queryLogic = "WHERE";
+
+        //restringe leitura a somente dados do system_id de acesso
+        if(!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"])
+            $queryLogic = "WHERE {$this->report['entidade']}.system_id = {$_SESSION["userlogin"]["system_id"]}";
+
 
         if(!empty($this->report['search'])) {
             foreach ($dicionario as $meta) {
