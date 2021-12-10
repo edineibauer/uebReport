@@ -148,7 +148,7 @@ class Report
         $queryLogic = "WHERE";
 
         //restringe leitura a somente dados do system_id de acesso
-        if($_SESSION["userlogin"]["setor"] !== "admin" && !isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"])
+        if($_SESSION["userlogin"]["setor"] !== "admin" && (!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"]))
             $queryLogic = "WHERE {$this->report['entidade']}.system_id = " . (!empty($_SESSION["userlogin"]["system_id"]) ? $_SESSION["userlogin"]["system_id"] : 99999999999999);
 
 
