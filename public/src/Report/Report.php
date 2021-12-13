@@ -214,8 +214,8 @@ class Report
         }
 
         //restringe leitura a somente dados do system_id de acesso
-        if($_SESSION["userlogin"]["setor"] !== "admin" && (!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"]))
-            $queryLogic .= ($queryLogic !== "WHERE" ? " AND ({$this->report['entidade']}.system_id = " . (!empty($_SESSION["userlogin"]["system_id"]) ? $_SESSION["userlogin"]["system_id"] : 99999999999999) . ")" : "");
+        if($_SESSION["userlogin"]["setor"] !== "admin" && !empty($_SESSION["userlogin"]["system_id"]) && (!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"]))
+            $queryLogic .= ($queryLogic !== "WHERE" ? " AND ({$this->report['entidade']}.system_id = " . $_SESSION["userlogin"]["system_id"] . ")" : "");
 
         $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . $this->limit . " OFFSET " . $this->offset;
 
