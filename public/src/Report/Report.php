@@ -90,12 +90,27 @@ class Report
         $queryDeclarationString = "FROM " . PRE . $this->report['entidade'] . " as " . $this->report['entidade'];
         $relations = [];
 
+        $searchFields = [];
+        $fieldsSee = [];
+        if(file_exists(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+            $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
+            foreach ($fff as $ff) {
+                if($ff["show"] === "true")
+                    $fieldsSee[] = $ff["column"];
+            }
+        }
+
         /**
          * Select the own entity fields
          */
         if (!empty($info['columns_readable'])) {
-            foreach ($info['columns_readable'] as $column)
+            foreach ($info['columns_readable'] as $column) {
+                if(!empty($fieldsSee) && !in_array($column, $fieldsSee))
+                    continue;
+
                 $querySelect .= ($querySelect === "" ? "" : ", ") . "{$this->report['entidade']}.{$column}";
+                $searchFields[] = "{$this->report['entidade']}.{$column}";
+            }
         }
 
         /**
@@ -131,15 +146,28 @@ class Report
          */
         if (!empty($info['relation'])) {
             foreach ($info['relation'] as $relationItem) {
-                if($dicionario[$relationItem]["format"] !== "list")
+                if($dicionario[$relationItem]["format"] !== "list" || !in_array($dicionario[$relationItem]["column"], $fieldsSee))
                     continue;
 
                 $relationEntity = $dicionario[$relationItem]['relation'];
                 $relations[$dicionario[$relationItem]['column']] = $relationEntity;
 
+                $fieldsRelation = [];
+                if(file_exists(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+                    $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
+                    foreach ($fff as $ff) {
+                        if ($ff["show"] === "true")
+                            $fieldsRelation[] = $ff["column"];
+                    }
+                }
+
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
                     foreach ($infoRelation['columns_readable'] as $column) {
+
+                        if(!empty($fieldsRelation) && !in_array($column, $fieldsRelation))
+                            continue;
+
                         $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
                         $searchColumRelation[] = "data_" . $dicionario[$relationItem]['column'] . ".{$column}";
                     }
@@ -152,12 +180,13 @@ class Report
         $queryLogic = "WHERE";
 
         if(!empty($this->report['search'])) {
-            foreach ($dicionario as $meta) {
-                if(!in_array($meta['key'], ["information"]))
-                    $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$this->report['entidade']}.{$meta['column']} LIKE '%{$this->report['search']}%'";
-            }
-            foreach ($searchColumRelation as $item)
+            foreach ($searchFields as $item)
                 $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$item} LIKE '%{$this->report['search']}%'";
+
+            if(!empty($searchColumRelation)) {
+                foreach ($searchColumRelation as $item)
+                    $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$item} LIKE '%{$this->report['search']}%'";
+            }
 
             $queryLogic .= ")";
         }
