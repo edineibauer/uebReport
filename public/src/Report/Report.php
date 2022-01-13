@@ -124,6 +124,8 @@ class Report
             $queryDeclarationString .= " LEFT JOIN " . PRE . "usuarios as autor_user ON autor_user.id = {$this->report['entidade']}." . ($info['autor'] == 1 ? "autorpub" : "ownerpub");
         }
 
+        $searchColumRelation = [];
+
         /**
          * Include the data from each relation
          */
@@ -137,8 +139,10 @@ class Report
 
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
-                    foreach ($infoRelation['columns_readable'] as $column)
+                    foreach ($infoRelation['columns_readable'] as $column) {
                         $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
+                        $searchColumRelation[] = "data_" . $dicionario[$relationItem]['column'] . ".{$column}";
+                    }
                 }
 
                 $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['column'] . " ON data_" . $dicionario[$relationItem]['column'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
@@ -149,9 +153,12 @@ class Report
 
         if(!empty($this->report['search'])) {
             foreach ($dicionario as $meta) {
-                if(!in_array($meta['key'], ["information", "identifier"]))
+                if(!in_array($meta['key'], ["information"]))
                     $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$this->report['entidade']}.{$meta['column']} LIKE '%{$this->report['search']}%'";
             }
+            foreach ($searchColumRelation as $item)
+                $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$item} LIKE '%{$this->report['search']}%'";
+
             $queryLogic .= ")";
         }
 
