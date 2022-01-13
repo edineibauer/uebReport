@@ -105,11 +105,10 @@ class Report
          */
         if (!empty($info['columns_readable'])) {
             foreach ($info['columns_readable'] as $column) {
-                if(!empty($fieldsSee) && !in_array($column, $fieldsSee))
-                    continue;
-
                 $querySelect .= ($querySelect === "" ? "" : ", ") . "{$this->report['entidade']}.{$column}";
-                $searchFields[] = "{$this->report['entidade']}.{$column}";
+
+                if(!empty($fieldsSee) && !in_array($column, $fieldsSee))
+                    $searchFields[] = "{$this->report['entidade']}.{$column}";
             }
         }
 
@@ -164,12 +163,10 @@ class Report
                 $infoRelation = Metadados::getInfo($relationEntity);
                 if (!empty($infoRelation['columns_readable'])) {
                     foreach ($infoRelation['columns_readable'] as $column) {
+                        $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
 
                         if(!empty($fieldsRelation) && !in_array($column, $fieldsRelation))
-                            continue;
-
-                        $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
-                        $searchColumRelation[] = "data_" . $dicionario[$relationItem]['column'] . ".{$column}";
+                            $searchColumRelation[] = "data_" . $dicionario[$relationItem]['column'] . ".{$column}";
                     }
                 }
 
