@@ -107,7 +107,7 @@ class Report
             foreach ($info['columns_readable'] as $column) {
                 $querySelect .= ($querySelect === "" ? "" : ", ") . "{$this->report['entidade']}.{$column}";
 
-                if(!empty($fieldsSee) && !in_array($column, $fieldsSee))
+                if(empty($fieldsSee) || in_array($column, $fieldsSee))
                     $searchFields[] = "{$this->report['entidade']}.{$column}";
             }
         }
