@@ -79,12 +79,15 @@ class Report
 
     private function start()
     {
+        /**
+         * Permissão de acesso a entidade pelo perfil que esta acessando
+         */
         $permission = Config::getPermission($_SESSION["userlogin"]["setor"]);
+        $info = Metadados::getInfo($this->report['entidade']);
 
-        if($_SESSION["userlogin"]["setor"] !== "admin" && !$permission[$this->report['entidade']]["read"])
+        if ($_SESSION["userlogin"]["setor"] !== "admin" && !$permission[$this->report['entidade']]["read"])
             return;
 
-        $info = Metadados::getInfo($this->report['entidade']);
         $dicionario = Metadados::getDicionario($this->report['entidade']);
         $querySelect = "";
         $queryDeclarationString = "FROM " . PRE . $this->report['entidade'] . " as " . $this->report['entidade'];
@@ -92,10 +95,10 @@ class Report
 
         $searchFields = [];
         $fieldsSee = [];
-        if(file_exists(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+        if (file_exists(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
             $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
             foreach ($fff as $ff) {
-                if($ff["show"] === "true")
+                if ($ff["show"] === "true")
                     $fieldsSee[] = $ff["column"];
             }
         }
@@ -107,7 +110,7 @@ class Report
             foreach ($info['columns_readable'] as $column) {
                 $querySelect .= ($querySelect === "" ? "" : ", ") . "{$this->report['entidade']}.{$column}";
 
-                if(empty($fieldsSee) || in_array($column, $fieldsSee))
+                if (empty($fieldsSee) || in_array($column, $fieldsSee))
                     $searchFields[] = "{$this->report['entidade']}.{$column}";
             }
         }
@@ -145,14 +148,14 @@ class Report
          */
         if (!empty($info['relation'])) {
             foreach ($info['relation'] as $relationItem) {
-                if($dicionario[$relationItem]["format"] !== "list" || !in_array($dicionario[$relationItem]["column"], $fieldsSee))
+                if ($dicionario[$relationItem]["format"] !== "list" || !in_array($dicionario[$relationItem]["column"], $fieldsSee))
                     continue;
 
                 $relationEntity = $dicionario[$relationItem]['relation'];
                 $relations[$dicionario[$relationItem]['column']] = $relationEntity;
 
                 $fieldsRelation = [];
-                if(file_exists(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+                if (file_exists(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
                     $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
                     foreach ($fff as $ff) {
                         if ($ff["show"] === "true")
@@ -165,7 +168,7 @@ class Report
                     foreach ($infoRelation['columns_readable'] as $column) {
                         $querySelect .= ", data_" . $dicionario[$relationItem]['column'] . ".{$column} as {$dicionario[$relationItem]['column']}___{$column}";
 
-                        if(!empty($fieldsRelation) && !in_array($column, $fieldsRelation))
+                        if (!empty($fieldsRelation) && !in_array($column, $fieldsRelation))
                             $searchColumRelation[] = "data_" . $dicionario[$relationItem]['column'] . ".{$column}";
                     }
                 }
@@ -176,11 +179,11 @@ class Report
 
         $queryLogic = "WHERE";
 
-        if(!empty($this->report['search'])) {
+        if (!empty($this->report['search'])) {
             foreach ($searchFields as $item)
                 $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$item} LIKE '%{$this->report['search']}%'";
 
-            if(!empty($searchColumRelation)) {
+            if (!empty($searchColumRelation)) {
                 foreach ($searchColumRelation as $item)
                     $queryLogic .= ($queryLogic === "WHERE" ? " (" : " || ") . "{$item} LIKE '%{$this->report['search']}%'";
             }
@@ -217,7 +220,7 @@ class Report
         $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC");
 
         $queryGroup = "";
-        if(!empty($this->report['agrupamento'])) {
+        if (!empty($this->report['agrupamento'])) {
             $queryGroup = "GROUP BY {$this->report['entidade']}." . $this->report['agrupamento'];
             $querySelect .= ", COUNT({$this->report['entidade']}.id) as contagem, COUNT({$this->report['entidade']}.id) as total";
 
@@ -226,19 +229,19 @@ class Report
             $maior = (!empty($this->report['maior'])) ? json_decode($this->report['maior'], !0) : [];
             $menor = (!empty($this->report['menor'])) ? json_decode($this->report['menor'], !0) : [];
 
-            if(!empty($soma)) {
+            if (!empty($soma)) {
                 foreach ($soma as $item)
                     $querySelect .= ", SUM({$this->report['entidade']}.{$item}) as {$item}";
             }
-            if(!empty($media)) {
+            if (!empty($media)) {
                 foreach ($media as $item)
                     $querySelect .= ", AVG({$this->report['entidade']}.{$item}) as {$item}";
             }
-            if(!empty($maior)) {
+            if (!empty($maior)) {
                 foreach ($maior as $item)
                     $querySelect .= ", MAX({$this->report['entidade']}.{$item}) as {$item}";
             }
-            if(!empty($menor)) {
+            if (!empty($menor)) {
                 foreach ($menor as $item)
                     $querySelect .= ", MIN({$this->report['entidade']}.{$item}) as {$item}";
             }
@@ -246,9 +249,35 @@ class Report
             $querySelect .= ", 1 as contagem";
         }
 
-        //restringe leitura a somente dados do system_id de acesso
-        if($_SESSION["userlogin"]["setor"] !== "admin" && !empty($_SESSION["userlogin"]["system_id"]) && (!isset($permission[$this->report['entidade']]["explore"]) || !$permission[$this->report['entidade']]["explore"]))
-            $queryLogic .= ($queryLogic !== "WHERE" ? " AND " : " ") . "({$this->report['entidade']}.system_id IS NULL OR {$this->report['entidade']}.system_id = " . $_SESSION["userlogin"]["system_id"] . ")";
+        /**
+         * restringe leitura a somente dados do system_id de acesso
+         * Aplica regra recursiva sobre sistema pai
+         */
+        if ($_SESSION["userlogin"]["setor"] !== "admin" && !empty($info['system'])) {
+
+            // permite registros que não tem vinculos com nenhum sistema (criados pelo admin)
+            $queryLogic .= ($queryLogic !== "WHERE" ? " AND " : " ") . "(({$this->report['entidade']}.system_id IS NULL AND {$this->report['entidade']}.system_entity IS NULL)";
+
+            /**
+             * Se não for um administrador e
+             * tem um sistema vinculado
+             */
+            if(!empty($_SESSION["userlogin"]["system_id"])) {
+                $mySystem = Metadados::getInfo($_SESSION["userlogin"]['setor']);
+
+                //permite registros que estão vinculados ao meu sistema
+                $queryLogic .= " OR ({$this->report['entidade']}.system_id = {$_SESSION["userlogin"]["system_id"]} AND {$this->report['entidade']}.system_entity = '{$mySystem['system']}')";
+
+                //permite registros que estão abaixo do meu sistema
+                $listaEntitySystemBelow = $this->_getEntitySystemBelow($mySystem['system'], $info['system'], []);
+                if(!empty($listaEntitySystemBelow)) {
+                    foreach ($listaEntitySystemBelow as $systemBelow)
+                        $queryLogic .= " OR {$this->report['entidade']}.system_entity = '" . $systemBelow . "'";
+                }
+            }
+
+            $queryLogic .= ")";
+        }
 
         $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . $this->limit . " OFFSET " . $this->offset;
 
@@ -269,7 +298,7 @@ class Report
                  */
                 foreach ($dicionario as $meta) {
                     $m = new \Entity\Meta($meta);
-                    if($meta['format'] === "password") {
+                    if ($meta['format'] === "password") {
                         $m->setValue("");
                         $register[$meta['column']] = "";
                     } else {
@@ -321,10 +350,10 @@ class Report
                     }
                 }
 
-                if(!empty($info['relation'])) {
+                if (!empty($info['relation'])) {
                     $read = new Read();
                     foreach ($info['relation'] as $re) {
-                        if($dicionario[$re]["format"] !== "list_mult" || empty($register[$dicionario[$re]["column"]]))
+                        if ($dicionario[$re]["format"] !== "list_mult" || empty($register[$dicionario[$re]["column"]]))
                             continue;
 
                         $read->exeRead($dicionario[$re]["relation"], "WHERE id IN(" . implode(",", $register[$dicionario[$re]["column"]]) . ")");
@@ -332,7 +361,7 @@ class Report
                     }
                 }
 
-                if(!empty($info['system'])) {
+                if (!empty($info['system'])) {
                     /**
                      * Check if the struct of relation data received have a ID
                      * if not, so delete
@@ -348,7 +377,7 @@ class Report
                         foreach (Metadados::getDicionario($info['system']) as $meta) {
                             $m = new \Entity\Meta($meta);
 
-                            if($meta['format'] === "password") {
+                            if ($meta['format'] === "password") {
                                 $m->setValue("");
                                 $relationData["system_id"][$meta['column']] = "";
                             } else {
@@ -359,7 +388,7 @@ class Report
                     }
                 }
 
-                if(!empty($info['autor']) && !empty($relationData["usuarios"])) {
+                if (!empty($info['autor']) && !empty($relationData["usuarios"])) {
                     /**
                      * Check if the struct of relation data received have a ID
                      * if not, so delete
@@ -375,7 +404,7 @@ class Report
                         foreach (Metadados::getDicionario("usuarios") as $meta) {
                             $m = new \Entity\Meta($meta);
 
-                            if($meta['format'] === "password") {
+                            if ($meta['format'] === "password") {
                                 $m->setValue("");
                                 $relationData["usuarios"][$meta['column']] = "";
                             } else {
@@ -411,7 +440,7 @@ class Report
                             foreach (Metadados::getDicionario($relation) as $meta) {
                                 $m = new \Entity\Meta($meta);
 
-                                if($meta['format'] === "password") {
+                                if ($meta['format'] === "password") {
                                     $m->setValue("");
                                     $relationData[$RelationColumn][$meta['column']] = "";
                                 } else {
@@ -424,7 +453,7 @@ class Report
                              * If is a user relation entity add the relationData
                              */
                             foreach ($dicionario as $meta) {
-                                if($meta['column'] === $RelationColumn && $meta['relation'] === "usuarios" && !empty($relationData[$RelationColumn]['setor'])) {
+                                if ($meta['column'] === $RelationColumn && $meta['relation'] === "usuarios" && !empty($relationData[$RelationColumn]['setor'])) {
                                     $relationData[$RelationColumn]['relationData'][$relationData[$RelationColumn]['setor']] = Entity::getUserSetorData($relationData[$RelationColumn]['setor'], $relationData[$RelationColumn]['id']);
                                     break;
                                 }
@@ -458,6 +487,37 @@ class Report
     }
 
     /**
+     * Obtém lista de entidades que estão em um sistema inferior ao do usuário
+     * @param string $mySystem
+     * @param string $entitySystem
+     * @param array $lista
+     * @return array
+     */
+    private function _getEntitySystemBelow(string $mySystem, string $entitySystem, array $lista) {
+        if($mySystem === $entitySystem) {
+            /**
+             * Meu usuário esta no mesmo nível de sistema que a entidade em questão
+             */
+            return $lista;
+
+        } else {
+            /**
+             * Verifica se a entidade possui um sistema pai
+             */
+            $infoparent = Metadados::getInfo($entitySystem);
+            if(!empty($infoparent['system'])) {
+                /**
+                 * Entidade possui um sistema pai, verifica se é o mesmo que o meu
+                 */
+                $lista[] = $entitySystem;
+                return $this->_getEntitySystemBelow($mySystem, $infoparent['system'], $lista);
+            }
+
+            return [];
+        }
+    }
+
+    /**
      * @param array $filter
      * @return string
      */
@@ -466,7 +526,7 @@ class Report
         $query = "";
         foreach ($filter as $i => $filterOption) {
 
-            if($filterOption['coluna'] === "ownerpub" OR $filterOption['coluna'] === "system_id")
+            if ($filterOption['coluna'] === "ownerpub" or $filterOption['coluna'] === "system_id")
                 continue;
 
             if ($i > 0)
@@ -496,9 +556,9 @@ class Report
             /**
              * Convert uso de variável do front USER como valor
              */
-            if(preg_match("/^USER./i", $filterOption['valor'])) {
+            if (preg_match("/^USER./i", $filterOption['valor'])) {
                 $fields = explode(".", str_replace("USER.", "", $filterOption['valor']));
-                if(count($fields) > 0 && count($fields) < 5)
+                if (count($fields) > 0 && count($fields) < 5)
                     $filterOption['valor'] = (!empty($fields[4]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]][$fields[3]][$fields[4]] : (!empty($fields[3]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]][$fields[3]] : (!empty($fields[2]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]][$fields[2]] : (!empty($fields[1]) ? $_SESSION['userlogin'][$fields[0]][$fields[1]] : $_SESSION['userlogin'][$fields[0]]))));
             }
 
@@ -513,7 +573,7 @@ class Report
                     $meta = new Meta($item);
                     $tipo = $meta->getType();
 
-                    if($meta->get('format') === "password") {
+                    if ($meta->get('format') === "password") {
                         $meta->setValue("");
                         $valorTipado = "";
                     } else {
@@ -524,7 +584,7 @@ class Report
                 }
             }
 
-            if(!in_array($tipo, ["int", "tinyint", "double", "decimal", "float", "smallint"]))
+            if (!in_array($tipo, ["int", "tinyint", "double", "decimal", "float", "smallint"]))
                 $valorTipado = '"' . str_replace('"', "'", $valor) . '"';
 
             switch ($filterOption['operador']) {
