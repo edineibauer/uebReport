@@ -11,6 +11,18 @@ function getTrStyle(meta, value) {
     return ""
 }
 
+function updateGraficos() {
+    return dbLocal.clear('__graficos').then(() => {
+        return AJAX.get("graficos").then(r => {
+            return dbLocal.exeCreate('__graficos', r);
+        });
+    });
+}
+
+function getGraficos() {
+    return dbLocal.exeRead("__graficos", 1);
+}
+
 function getTrClass(meta, value) {
     if (typeof meta !== "undefined") {
         let classe = 'td-' + meta.format + " " + meta.datagrid.grid_class;
