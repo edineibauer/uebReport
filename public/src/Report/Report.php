@@ -90,7 +90,7 @@ class Report
 
         $dicionario = Metadados::getDicionario($this->report['entidade']);
         $querySelect = "";
-        $queryDeclarationString = "FROM " . PRE . $this->report['entidade'] . " as " . $this->report['entidade'];
+        $queryDeclarationString = "FROM " . $this->report['entidade'] . " as " . $this->report['entidade'];
         $relations = [];
 
         $searchFields = [];
@@ -125,7 +125,7 @@ class Report
                     $querySelect .= ", system_" . $info['system'] . ".{$column} as {$info['system']}___{$column}";
             }
 
-            $queryDeclarationString .= " LEFT JOIN " . PRE . $info['system'] . " as system_" . $info['system'] . " ON system_" . $info['system'] . ".id = {$this->report['entidade']}.system_id";
+            $queryDeclarationString .= " LEFT JOIN " . $info['system'] . " as system_" . $info['system'] . " ON system_" . $info['system'] . ".id = {$this->report['entidade']}.system_id";
         }
 
         /**
@@ -138,7 +138,7 @@ class Report
                     $querySelect .= ", autor_user.{$column} as autor_user___{$column}";
             }
 
-            $queryDeclarationString .= " LEFT JOIN " . PRE . "usuarios as autor_user ON autor_user.id = {$this->report['entidade']}." . ($info['autor'] == 1 ? "autorpub" : "ownerpub");
+            $queryDeclarationString .= " LEFT JOIN usuarios as autor_user ON autor_user.id = {$this->report['entidade']}." . ($info['autor'] == 1 ? "autorpub" : "ownerpub");
         }
 
         $searchColumRelation = [];
@@ -173,7 +173,7 @@ class Report
                     }
                 }
 
-                $queryDeclarationString .= " LEFT JOIN " . PRE . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['column'] . " ON data_" . $dicionario[$relationItem]['column'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
+                $queryDeclarationString .= " LEFT JOIN " . $dicionario[$relationItem]['relation'] . " as data_" . $dicionario[$relationItem]['column'] . " ON data_" . $dicionario[$relationItem]['column'] . ".id = {$this->report['entidade']}." . $dicionario[$relationItem]['column'];
             }
         }
 
@@ -206,16 +206,16 @@ class Report
                     if ($regra['tipo'] === 'select') {
                         $queryLogic .= $query;
                     } elseif ($regra['tipo'] === "inner_join") {
-                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
+                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
                     } elseif ($regra['tipo'] === "outer_join") {
-                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} NOT IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . PRE . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
+                        $queryLogic .= " " . strtoupper($grupo['filtros'][0]['logica']) . " {$this->report['entidade']}.{$regra['tipoColumn']} NOT IN ( SELECT {$this->report['entidade']}.{$regra['tipoColumn']} FROM " . $this->report['entidade'] . " as {$this->report['entidade']} WHERE{$query})";
                     }
                 }
             }
         }
 
         foreach ($this->queryDeclaration as $entity => $logic)
-            $queryDeclarationString .= " {$logic['tipo']} " . PRE . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
+            $queryDeclarationString .= " {$logic['tipo']} " . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
         $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC");
 
