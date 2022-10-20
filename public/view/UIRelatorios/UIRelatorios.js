@@ -253,7 +253,7 @@ function reportTable(dataReport, $element) {
             let offset = ($this.page * $this.limit) - $this.limit;
             let result = await exeReadEntity($this.entity, $this.search, $this.report, $this.filterAggroup, $this.filterAggroupSum, $this.filterAggroupMedia, $this.filterAggroupMaior, $this.filterAggroupMenor, $this.order, $this.orderPosition, $this.limit, offset);
             result = {data: result, length: result.length === $this.limit ? result.length + 1 : result.length};
-            let templates = await getTemplates();
+            let templates = getTemplates();
 
             $this.setTotalRegisters(result.length);
             $this.$content.html("");
@@ -332,25 +332,24 @@ function reportTable(dataReport, $element) {
                     });
                 }
 
-                return getTemplates().then(templates => {
-                    return Mustache.render(templates.report_table, {
-                        entity: report.entity,
-                        title: report.nome,
-                        home: HOME,
-                        limits: {
-                            a: this.limit === 15,
-                            b: this.limit === 25,
-                            c: this.limit === 50,
-                            d: this.limit === 100,
-                            e: this.limit === 250,
-                            f: this.limit === 500,
-                            g: this.limit === 1000
-                        },
-                        identificador: this.identificador,
-                        total: 0,
-                        fields: this.fields
-                    })
-                });
+                let templates = getTemplates();
+                return Mustache.render(templates.report_table, {
+                    entity: report.entity,
+                    title: report.nome,
+                    home: HOME,
+                    limits: {
+                        a: this.limit === 15,
+                        b: this.limit === 25,
+                        c: this.limit === 50,
+                        d: this.limit === 100,
+                        e: this.limit === 250,
+                        f: this.limit === 500,
+                        g: this.limit === 1000
+                    },
+                    identificador: this.identificador,
+                    total: 0,
+                    fields: this.fields
+                })
             })
         },
 
@@ -669,19 +668,18 @@ $(function ($) {
         let $this = $(this);
         let identificador = $this.data("rel");
         let report = reports[identificador];
-        getTemplates().then(tpl => {
-            $this.parent().append(Mustache.render(tpl.grid_content_card_header, {
-                identificador: $this.data("rel"),
-                entity: $this.data("entity"),
-                columns: report.fields
-            }));
-            let $cardHeader = $(".grid_content_card_header");
-            $(document).on("mouseup", function (e) {
-                if (!$cardHeader.is(e.target) && $cardHeader.has(e.target).length === 0) {
-                    $cardHeader.remove();
-                    $(document).off("mouseup")
-                }
-            })
+        let tpl = getTemplates();
+        $this.parent().append(Mustache.render(tpl.grid_content_card_header, {
+            identificador: $this.data("rel"),
+            entity: $this.data("entity"),
+            columns: report.fields
+        }));
+        let $cardHeader = $(".grid_content_card_header");
+        $(document).on("mouseup", function (e) {
+            if (!$cardHeader.is(e.target) && $cardHeader.has(e.target).length === 0) {
+                $cardHeader.remove();
+                $(document).off("mouseup")
+            }
         });
 
     }).off("click", "#enviar-mensagem").on("click", "#enviar-mensagem", function () {
