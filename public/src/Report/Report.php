@@ -27,7 +27,7 @@ class Report
     {
         if (is_int($report)) {
             $read = new Read();
-            $read->exeRead("relatorios", "WHERE id = :id", "id={$report}");
+            $read->exeRead("relatorios", "WHERE id = :id", ["id" => $report]);
             $this->report = $read->getResult() ? $read->getResult()[0] : [];
         } elseif (is_array($report)) {
             $this->report = $report;
@@ -356,7 +356,7 @@ class Report
                         if ($dicionario[$re]["format"] !== "list_mult" || empty($register[$dicionario[$re]["column"]]))
                             continue;
 
-                        $read->exeRead($dicionario[$re]["relation"], "WHERE id IN(" . implode(",", $register[$dicionario[$re]["column"]]) . ")");
+                        $read->exeRead($dicionario[$re]["relation"], "WHERE id IN(:ii)", ["ii" => implode(",", $register[$dicionario[$re]["column"]])]);
                         $relationData[$dicionario[$re]["column"]] = $read->getResult();
                     }
                 }
