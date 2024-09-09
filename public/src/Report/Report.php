@@ -217,8 +217,6 @@ class Report
         foreach ($this->queryDeclaration as $entity => $logic)
             $queryDeclarationString .= " {$logic['tipo']} " . $entity . " as {$entity}" . (!empty($logic['on']) ? " ON " . $logic['on'] : "");
 
-        $queryOrder = "ORDER BY " . (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "") . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC");
-
         $queryGroup = "";
         if (!empty($this->report['agrupamento'])) {
             $queryGroup = "GROUP BY {$this->report['entidade']}." . $this->report['agrupamento'];
@@ -286,6 +284,9 @@ class Report
 
             $queryLogic .= ")";
         }
+
+        $orderIncludePrefix = (!in_array($this->report['ordem'], ["total", "contagem"]) ? $this->report['entidade'] . "." : "");
+        $queryOrder = "ORDER BY " . (!empty($info['status']) ? $orderIncludePrefix . $dicionario[$info['status']]['column'] . " DESC, " : "") . $orderIncludePrefix . (!empty($this->report['ordem']) ? $this->report['ordem'] : "id") . ($this->report['decrescente'] === null || $this->report['decrescente'] ? " DESC" : " ASC");
 
         $query = "SELECT " . $querySelect . " " . $queryDeclarationString . " " . ($queryLogic !== "WHERE" ? $queryLogic . " " : "") . $queryGroup . " " . $queryOrder . " LIMIT " . $this->limit . " OFFSET " . $this->offset;
 
