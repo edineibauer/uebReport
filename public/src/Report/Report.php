@@ -95,8 +95,8 @@ class Report
 
         $searchFields = [];
         $fieldsSee = [];
-        if (file_exists(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
-            $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
+        if (file_exists(PATH_PRIVATE . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+            $fff = json_decode(file_get_contents(PATH_PRIVATE . "_cdn/fieldsCustom/{$this->report['entidade']}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
             foreach ($fff as $ff) {
                 if ($ff["show"] === "true")
                     $fieldsSee[] = $ff["column"];
@@ -155,8 +155,8 @@ class Report
                 $relations[$dicionario[$relationItem]['column']] = $relationEntity;
 
                 $fieldsRelation = [];
-                if (file_exists(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
-                    $fff = json_decode(file_get_contents(PATH_HOME . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
+                if (file_exists(PATH_PRIVATE . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json")) {
+                    $fff = json_decode(file_get_contents(PATH_PRIVATE . "_cdn/fieldsCustom/{$relationEntity}/grid/{$_SESSION["userlogin"]["id"]}.json"), true);
                     foreach ($fff as $ff) {
                         if ($ff["show"] === "true")
                             $fieldsRelation[] = $ff["column"];
